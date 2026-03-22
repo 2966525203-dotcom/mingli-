@@ -4,35 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>三世命理 | 八字·紫微·八宅风水</title>
-    <!-- 直接使用国内稳定的 CDN（无需本地文件） -->
+    <!-- 使用多个国内稳定的 CDN 自动重试，无需本地文件 -->
     <script>
-        // 备用 CDN 列表（按顺序尝试）
         var cdnList = [
             "https://unpkg.zhimg.com/lunar-javascript@1.8.2/lunar.min.js",
             "https://npm.elemecdn.com/lunar-javascript@1.8.2/lunar.min.js",
             "https://cdn.jsdelivr.net/npm/lunar-javascript@1.8.2/lunar.min.js"
         ];
-        var currentIndex = 0;
+        var idx = 0;
         function loadNext() {
-            if (currentIndex >= cdnList.length) {
+            if (idx >= cdnList.length) {
                 document.getElementById('baziContent').innerHTML = '<div class="error-msg">所有排盘库加载失败，请检查网络或<a href="javascript:location.reload()">刷新页面</a>重试。如持续失败，可尝试更换浏览器或使用手机网络。</div>';
                 return;
             }
             var script = document.createElement('script');
-            script.src = cdnList[currentIndex];
+            script.src = cdnList[idx];
             script.onload = function() {
-                // 检查库是否可用
                 if (typeof Lunar !== 'undefined' && Lunar.Lunar && Lunar.Astrolabe) {
                     window.lunarReady = true;
                     if (window.onLunarReady) window.onLunarReady();
                 } else {
-                    // 加载了但库未定义，尝试下一个
-                    currentIndex++;
+                    idx++;
                     loadNext();
                 }
             };
             script.onerror = function() {
-                currentIndex++;
+                idx++;
                 loadNext();
             };
             document.head.appendChild(script);
@@ -172,12 +169,9 @@
 </div>
 
 <script>
-    // 检测库是否就绪
     function isLunarReady() {
         return typeof Lunar !== 'undefined' && Lunar.Lunar && Lunar.Astrolabe;
     }
-
-    // 获取出生日期对象
     function getBirthDateTime() {
         let calType = document.getElementById('calendarType').value;
         let hourIdx = parseInt(document.getElementById('timeIndex').value);
@@ -198,14 +192,10 @@
             return d;
         }
     }
-
-    let currentLunarDate = null;
-    let currentEightChar = null;
-    let currentGender = 1;
-
+    let currentLunarDate = null, currentEightChar = null, currentGender = 1;
     function refreshBazi() {
         if (!isLunarReady()) {
-            document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库未加载，请<a href="javascript:location.reload()">刷新页面</a>重试。如持续失败，请检查网络或稍后再试。</div>';
+            document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库未加载，请<a href="javascript:location.reload()">刷新页面</a>重试。</div>';
             return;
         }
         try {
@@ -216,45 +206,30 @@
             currentLunarDate = lunarObj;
             let eightChar = lunarObj.getEightChar();
             currentEightChar = eightChar;
-
             let baziHtml = `表格<th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th>`;
-            baziHtml += `     <tr><td>${eightChar.getYear()}<br>${eightChar.getYearGanZhi()}</td>
-                            <td>${eightChar.getMonth()}<br>${eightChar.getMonthGanZhi()}</td>
-                            <td>${eightChar.getDay()}<br>${eightChar.getDayGanZhi()}</td>
-                            <td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td></tr>`;
-            baziHtml += `</table><div style="margin-top:8px;"><strong>日主</strong> ${eightChar.getDayGan()} · 五行${eightChar.getDayWuXing()}</div>`;
+            baziHtml += `      <tr><td>${eightChar.getYear()}<br>${eightChar.getYearGanZhi()}</td><td>${eightChar.getMonth()}<br>${eightChar.getMonthGanZhi()}</td><td>${eightChar.getDay()}<br>${eightChar.getDayGanZhi()}</td><td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td></tr></table>`;
+            baziHtml += `<div style="margin-top:8px;"><strong>日主</strong> ${eightChar.getDayGan()} · 五行${eightChar.getDayWuXing()}</div>`;
             document.getElementById('baziContent').innerHTML = baziHtml;
-
             let daYunList = eightChar.getDaYun();
             let dayunHtml = `<div style="max-height:200px; overflow:auto;"><table><tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr>`;
             if(daYunList && daYunList.length){
                 daYunList.forEach((dy,idx)=>{
                     dayunHtml += `<tr><td>${idx+1}</td><td>${dy.getStartYear()}</td><td>${dy.getGanZhi()}</td><td>参考日主${eightChar.getDayGan()}，结合流年干支综合判断。</td></tr>`;
                 });
-            } else {
-                dayunHtml += `<tr><td colspan="4">大运数据生成中(参考万年历)</td></tr>`;
-            }
+            } else { dayunHtml += `<tr><td colspan="4">大运数据生成中(参考万年历)</td></tr>`; }
             dayunHtml += `</table></div><p class="disclaimer" style="font-size:0.7rem;">⚠️ 专业流年喜忌：日主强弱及用神根据四柱综合，建议咨询专业人士。</p>`;
             document.getElementById('dayunLiunianInfo').innerHTML = dayunHtml;
         } catch(e) {
-            console.error(e);
-            document.getElementById('baziContent').innerHTML = `<div class="error-msg">排盘出错：${e.message}，请检查日期是否有效。</div>`;
+            document.getElementById('baziContent').innerHTML = `<div class="error-msg">排盘出错：${e.message}</div>`;
         }
     }
-
     function refreshZiwei() {
-        if (!isLunarReady()) {
-            document.getElementById('ziweiPanel').innerHTML = '<div class="error-msg">排盘库未加载，请刷新页面重试。</div>';
-            return;
-        }
+        if (!isLunarReady()) { document.getElementById('ziweiPanel').innerHTML = '<div class="error-msg">排盘库未加载，请刷新页面重试。</div>'; return; }
         try {
             let birthDate = getBirthDateTime();
             let genderInt = parseInt(document.getElementById('gender').value);
-            let year = birthDate.getFullYear();
-            let month = birthDate.getMonth()+1;
-            let day = birthDate.getDate();
-            let hourVal = birthDate.getHours();
-            let minuteVal = birthDate.getMinutes();
+            let year = birthDate.getFullYear(), month = birthDate.getMonth()+1, day = birthDate.getDate();
+            let hourVal = birthDate.getHours(), minuteVal = birthDate.getMinutes();
             let astrolabe = Lunar.Astrolabe.fromBirth(year, month, day, hourVal, minuteVal, genderInt);
             let palaces = astrolabe.getPalaces();
             let ziweiHtml = `<table><tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr>`;
@@ -265,12 +240,8 @@
             }
             ziweiHtml += `</table><div style="font-size:0.7rem; margin-top:5px;">※ 紫微斗数排盘专业精准，十二宫格局完整</div>`;
             document.getElementById('ziweiPanel').innerHTML = ziweiHtml;
-        } catch(e) {
-            document.getElementById('ziweiPanel').innerHTML = `<div class="error-msg">紫微排盘失败：${e.message}</div>`;
-        }
+        } catch(e) { document.getElementById('ziweiPanel').innerHTML = `<div class="error-msg">紫微排盘失败：${e.message}</div>`; }
     }
-
-    // 八宅风水数据
     const baguaMap = {
         '坎':{'生气':'东南','延年':'南','天医':'东','伏位':'北','五鬼':'西南','六煞':'西','绝命':'西北','祸害':'东北'},
         '坤':{'生气':'东北','延年':'西北','天医':'西','伏位':'西南','五鬼':'东南','六煞':'北','绝命':'东','祸害':'南'},
@@ -284,8 +255,7 @@
     function renderBaguaGrid() {
         let dir = document.getElementById('houseDirection').value;
         let stars = baguaMap[dir];
-        let html = `<h4>🏡 ${dir}宅 八宅吉凶星方位 (苏民峰传承)</h4><table><tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>
-        <tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
+        let html = `<h4>🏡 ${dir}宅 八宅吉凶星方位 (苏民峰传承)</h4><table><tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr><tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
         document.getElementById('baguaGridDisplay').innerHTML = html;
         if(unlockedFengshui) showFengshuiUnlockedDetail(dir);
         else document.getElementById('fengshuiUnlockedContent').style.display = 'none';
@@ -305,8 +275,6 @@
         document.getElementById('fengshuiUnlockedContent').innerHTML = `<i class="fas fa-lock-open"></i> <strong>【解锁专享】${dir}宅流年化解与布局建议</strong><br>${detail}<br><small>注：结合2026年流年紫白飞星及八宅游年吉凶方位综合建议。</small>`;
         document.getElementById('fengshuiUnlockedContent').style.display = 'block';
     }
-
-    // 合婚和结婚年份相关函数
     function previewMarriageSimple() {
         document.getElementById('marriagePreviewMsg').innerHTML = `<i class="fas fa-info-circle"></i> 合婚需解锁完整版（9.9元）包含双方八字匹配、十神互补、纳音及婚恋建议。`;
     }
@@ -328,7 +296,6 @@
         let analysisYear = `【最佳结婚年份】根据流年红鸾、天喜及日柱夫妻宫合参，未来十年内，${(new Date().getFullYear()+2)}年、${(new Date().getFullYear()+5)}年、${(new Date().getFullYear()+8)}年为婚缘最旺年份，易遇正缘，宜把握。`;
         document.getElementById('yearDetailLocked').innerHTML = `<div class="badge-unlocked">已解锁</div><div>${analysisYear}</div>`;
     }
-
     function handlePayment(type, event) {
         event.preventDefault();
         let target = event.currentTarget;
@@ -350,56 +317,38 @@
             };
         }
     }
-
     let unlockedMarriage = localStorage.getItem('unlock_marriage') === 'true';
     let unlockedYear = localStorage.getItem('unlock_year') === 'true';
     let unlockedFengshui = localStorage.getItem('unlock_fengshui') === 'true';
-
     function bindEvents() {
-        document.querySelectorAll('.pay-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                let type = btn.getAttribute('data-type');
-                handlePayment(type, e);
-            });
-        });
+        document.querySelectorAll('.pay-btn').forEach(btn => btn.addEventListener('click', (e) => { let type = btn.getAttribute('data-type'); handlePayment(type, e); }));
         document.getElementById('refreshBaziBtn').addEventListener('click', () => { refreshBazi(); if(unlockedMarriage) showMarriageDetailUnlocked(); if(unlockedYear) showMarriageYearUnlocked(); });
         document.getElementById('refreshZiweiBtn').addEventListener('click', refreshZiwei);
         document.getElementById('refreshFengshuiBtn').addEventListener('click', renderBaguaGrid);
         document.getElementById('previewMarriageBtn').addEventListener('click', previewMarriageSimple);
-        document.getElementById('previewYearBtn').addEventListener('click', () => {
-            document.getElementById('yearPreviewText').innerHTML = '🌟 根据流年运势，未来几年有婚动迹象，详细年份及红鸾星动日期需支付6.6元解锁完整报告。';
-        });
+        document.getElementById('previewYearBtn').addEventListener('click', () => { document.getElementById('yearPreviewText').innerHTML = '🌟 根据流年运势，未来几年有婚动迹象，详细年份及红鸾星动日期需支付6.6元解锁完整报告。'; });
         document.getElementById('calendarType').addEventListener('change', (e) => {
             let isLunar = e.target.value === 'lunar';
             document.getElementById('lunarYMDgroup').style.display = isLunar ? 'flex' : 'none';
             document.getElementById('solarDate').style.display = isLunar ? 'none' : 'block';
         });
     }
-
     function init() {
         bindEvents();
         document.getElementById('lunarYMDgroup').style.display = 'none';
         if (isLunarReady()) {
-            refreshBazi();
-            refreshZiwei();
-            renderBaguaGrid();
+            refreshBazi(); refreshZiwei(); renderBaguaGrid();
             if(unlockedMarriage) showMarriageDetailUnlocked();
             if(unlockedYear) showMarriageYearUnlocked();
-            if(unlockedFengshui) { let dir = document.getElementById('houseDirection').value; showFengshuiUnlockedDetail(dir); }
+            if(unlockedFengshui) showFengshuiUnlockedDetail(document.getElementById('houseDirection').value);
         } else {
-            window.onLunarReady = function() {
-                refreshBazi();
-                refreshZiwei();
-                renderBaguaGrid();
+            window.onLunarReady = () => {
+                refreshBazi(); refreshZiwei(); renderBaguaGrid();
                 if(unlockedMarriage) showMarriageDetailUnlocked();
                 if(unlockedYear) showMarriageYearUnlocked();
                 if(unlockedFengshui) showFengshuiUnlockedDetail(document.getElementById('houseDirection').value);
             };
-            setTimeout(function() {
-                if (!isLunarReady()) {
-                    document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库加载失败，请<a href="javascript:location.reload()">刷新页面</a>重试。如持续失败，可尝试更换网络或稍后再试。</div>';
-                }
-            }, 8000);
+            setTimeout(() => { if (!isLunarReady()) document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库加载失败，请<a href="javascript:location.reload()">刷新页面</a>重试。如持续失败，可尝试更换网络或稍后再试。</div>'; }, 8000);
         }
     }
     init();
