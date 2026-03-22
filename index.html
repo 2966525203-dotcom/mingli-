@@ -4,11 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>三世命理 | 八字·紫微·八宅风水</title>
-    <!-- 引用本地库文件（必须与 index.html 放在同一目录） -->
-    <script src="lunar.min.js"></script>
-    <!-- Font Awesome 6 图标库（可选，如加载失败不影响核心功能） -->
+    <!-- 使用绝对路径引用库（确保正确） -->
+    <script src="/mingli-/lunar.min.js"></script>
+    <!-- 备用 CDN（如果本地加载失败，自动尝试） -->
+    <script>
+        window.lunarLoaded = false;
+        function checkLunar() {
+            if (typeof Lunar !== 'undefined' && Lunar.Lunar && Lunar.Astrolabe) {
+                window.lunarLoaded = true;
+                if (window.onLunarReady) window.onLunarReady();
+                return true;
+            }
+            return false;
+        }
+        setTimeout(function() {
+            if (!checkLunar()) {
+                // 本地加载失败，尝试 CDN
+                var script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/lunar-javascript@1.8.2/lunar.min.js';
+                script.onload = function() {
+                    checkLunar();
+                };
+                script.onerror = function() {
+                    console.error('所有库加载失败');
+                    document.getElementById('baziContent').innerHTML = '<div class="error-msg">无法加载排盘库，请检查网络或联系客服。</div>';
+                };
+                document.head.appendChild(script);
+            }
+        }, 1000);
+    </script>
+    <!-- Font Awesome 6 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* 样式与之前相同，为节省篇幅此处省略，您可使用之前代码中的样式 */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { background:#f5efe7; font-family:'Segoe UI','华文楷书','Microsoft YaHei',sans-serif; color:#2c2418; padding:20px; }
         .container { max-width:1300px; margin:0 auto; }
@@ -191,7 +219,8 @@
             baziHtml += `    <tr><td>${eightChar.getYear()}<br>${eightChar.getYearGanZhi()}</td>
                             <td>${eightChar.getMonth()}<br>${eightChar.getMonthGanZhi()}</td>
                             <td>${eightChar.getDay()}<br>${eightChar.getDayGanZhi()}</td>
-                            <td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td></tr>`;
+                            <td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td>
+                        </tr>`;
             baziHtml += `</table><div style="margin-top:8px;"><strong>日主</strong> ${eightChar.getDayGan()} · 五行${eightChar.getDayWuXing()}</div>`;
             document.getElementById('baziContent').innerHTML = baziHtml;
 
@@ -257,7 +286,7 @@
         let dir = document.getElementById('houseDirection').value;
         let stars = baguaMap[dir];
         let html = `<h4>🏡 ${dir}宅 八宅吉凶星方位 (苏民峰传承)</h4><table><tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>
-        <tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
+         <tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
         document.getElementById('baguaGridDisplay').innerHTML = html;
         if(unlockedFengshui) showFengshuiUnlockedDetail(dir);
         else document.getElementById('fengshuiUnlockedContent').style.display = 'none';
@@ -355,6 +384,7 @@
     function init() {
         bindEvents();
         document.getElementById('lunarYMDgroup').style.display = 'none';
+        // 等待库加载完成
         if (isLunarReady()) {
             refreshBazi();
             refreshZiwei();
@@ -363,24 +393,24 @@
             if(unlockedYear) showMarriageYearUnlocked();
             if(unlockedFengshui) { let dir = document.getElementById('houseDirection').value; showFengshuiUnlockedDetail(dir); }
         } else {
-            // 等待库加载
-            let checkInterval = setInterval(() => {
+            // 监听库加载完成
+            window.onLunarReady = function() {
+                refreshBazi();
+                refreshZiwei();
+                renderBaguaGrid();
+                if(unlockedMarriage) showMarriageDetailUnlocked();
+                if(unlockedYear) showMarriageYearUnlocked();
+                if(unlockedFengshui) showFengshuiUnlockedDetail(document.getElementById('houseDirection').value);
+            };
+            // 如果库已经加载但未检测到，再检查一次
+            setTimeout(function() {
                 if (isLunarReady()) {
-                    clearInterval(checkInterval);
-                    refreshBazi();
-                    refreshZiwei();
-                    renderBaguaGrid();
-                    if(unlockedMarriage) showMarriageDetailUnlocked();
-                    if(unlockedYear) showMarriageYearUnlocked();
-                    if(unlockedFengshui) showFengshuiUnlockedDetail(document.getElementById('houseDirection').value);
+                    if (window.onLunarReady) window.onLunarReady();
+                } else {
+                    // 最终失败
+                    document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库加载失败，请<a href="javascript:location.reload()">刷新页面</a>重试。如持续失败，请确认 lunar.min.js 已上传并尝试在无痕模式下访问。</div>';
                 }
-            }, 200);
-            setTimeout(() => {
-                if (!isLunarReady()) {
-                    clearInterval(checkInterval);
-                    document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库加载失败，请确认 lunar.min.js 文件已上传到仓库根目录，并刷新页面重试。</div>';
-                }
-            }, 5000);
+            }, 3000);
         }
     }
     init();
