@@ -4,9 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>三世命理 | 八字·紫微·八宅风水</title>
-    <!-- 引入 Lunar 专业排盘库 -->
-    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.8.2/lunar.min.js"></script>
-    <!-- Font Awesome 6 -->
+    <!-- 使用国内可访问的 CDN 镜像（加速库加载） -->
+    <script src="https://unpkg.zhimg.com/lunar-javascript@1.8.2/lunar.min.js"></script>
+    <!-- 备用 CDN（如果上面失败，则尝试官方 CDN） -->
+    <script>
+        window.LunarCDNFallback = function() {
+            if (typeof Lunar === 'undefined') {
+                var script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/lunar-javascript@1.8.2/lunar.min.js';
+                script.onload = function() { location.reload(); };
+                document.head.appendChild(script);
+            }
+        };
+        setTimeout(window.LunarCDNFallback, 3000);
+    </script>
+    <!-- Font Awesome 6 图标库（国内可用） -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -45,6 +57,7 @@
         .contact-info { background:#fff3e6; border-radius:40px; padding:8px 20px; display:inline-block; margin-top:10px; font-size:0.9rem; border:1px solid #e2cbb0; }
         footer { text-align:center; margin:40px 0 20px; font-size:0.7rem; color:#aa8c70; }
         .error-msg { background:#ffe6e6; border-left:4px solid #c0392b; padding:10px; margin:10px 0; border-radius:8px; color:#a04030; font-size:0.8rem; }
+        .retry-btn { background:#c7793c; color:white; border-radius:40px; padding:6px 16px; font-size:0.8rem; cursor:pointer; border:none; margin-top:8px; }
         @media (max-width:680px) { .card { padding:15px; } .hero h1 { font-size:1.8rem; } }
     </style>
 </head>
@@ -174,7 +187,7 @@
     // 刷新八字
     function refreshBazi() {
         if (!isLunarReady()) {
-            document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库未加载，请检查网络后刷新页面重试。</div>';
+            document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库加载失败，请检查网络后<a href="javascript:location.reload()">刷新页面</a>重试。</div>';
             return;
         }
         try {
@@ -187,12 +200,12 @@
             currentEightChar = eightChar;
 
             // 八字表格
-            let baziHtml = `<table><tr><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr>
-                <tr><td>${eightChar.getYear()}<br>${eightChar.getYearGanZhi()}</td>
+            let baziHtml = `表格<th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th>`;
+            baziHtml += `  <tr><td>${eightChar.getYear()}<br>${eightChar.getYearGanZhi()}</td>
                 <td>${eightChar.getMonth()}<br>${eightChar.getMonthGanZhi()}</td>
                 <td>${eightChar.getDay()}<br>${eightChar.getDayGanZhi()}</td>
-                <td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td></tr></table>`;
-            baziHtml += `<div style="margin-top:8px;"><strong>日主</strong> ${eightChar.getDayGan()} · 五行${eightChar.getDayWuXing()}</div>`;
+                <td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td></tr>`;
+            baziHtml += `</table><div style="margin-top:8px;"><strong>日主</strong> ${eightChar.getDayGan()} · 五行${eightChar.getDayWuXing()}</div>`;
             document.getElementById('baziContent').innerHTML = baziHtml;
 
             // 大运流年
@@ -216,7 +229,7 @@
     // 紫微斗数
     function refreshZiwei() {
         if (!isLunarReady()) {
-            document.getElementById('ziweiPanel').innerHTML = '<div class="error-msg">排盘库未加载，请检查网络后刷新页面重试。</div>';
+            document.getElementById('ziweiPanel').innerHTML = '<div class="error-msg">排盘库未加载，请刷新页面重试。</div>';
             return;
         }
         try {
@@ -257,7 +270,7 @@
         let dir = document.getElementById('houseDirection').value;
         let stars = baguaMap[dir];
         let html = `<h4>🏡 ${dir}宅 八宅吉凶星方位 (苏民峰传承)</h4><table><tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>
-        <tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
+         <tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
         document.getElementById('baguaGridDisplay').innerHTML = html;
         if(unlockedFengshui) showFengshuiUnlockedDetail(dir);
         else document.getElementById('fengshuiUnlockedContent').style.display = 'none';
@@ -291,7 +304,7 @@
         pDate.setHours(partnerHour*2+1);
         let lunarPartner = Lunar.Lunar.fromDate(pDate);
         let ec2 = lunarPartner.getEightChar();
-        let analysis = `【合婚详批】日柱：${currentEightChar.getDayGanZhi()}与${ec2.getDayGanZhi()}，${(currentEightChar.getDayGan()===ec2.getDayGan())?'日元比和':'需互补'}。子平合婚法：年柱相生，月柱协调，婚缘指数良好。三合六冲: 生肖${currentLunarDate.获取生肖年()}与${lunarPartner.获取生肖年()}搭配，中吉。;
+        let analysis = `【合婚详批】日柱：${currentEightChar.getDayGanZhi()} 与 ${ec2.getDayGanZhi()}，${(currentEightChar.getDayGan()===ec2.getDayGan())?'日元比和':'需互补'}。子平合婚法：年柱相生，月柱协调，婚缘指数良好。三合六冲: 生肖${currentLunarDate.getYearShengXiao()}配${lunarPartner.getYearShengXiao()}，中吉。`;
         document.getElementById('marriageDetail').innerHTML = `<div class="badge-unlocked">已解锁</div><div>${analysis}</div>`;
     }
     function showMarriageYearUnlocked() {
@@ -306,7 +319,7 @@
         event.preventDefault();
         let target = event.currentTarget;
         let realUrl = target.getAttribute('data-realpay');
-        如果(realUrl && realUrl !== '#' && realUrl !== 'https://your-wechat-pay-link.com') {
+        if(realUrl && realUrl !== '#' && realUrl !== 'https://your-wechat-pay-link.com') {
             window.open(realUrl, '_blank');
             alert('请完成支付后，返回页面点击“我已支付”按钮（需自行开发回调）或联系客服解锁。\n如需自动解锁，请配置支付回调接口。');
         } else {
@@ -316,7 +329,7 @@
             modal.innerHTML = `<div class="modal-content"><i class="fas fa-check-circle" style="font-size:48px; color:#2b7e3a;"></i><h3>模拟支付成功</h3><p>感谢您的打赏支持！内容已解锁。</p><button id="closeModalBtn">确定</button></div>`;
             document.body.appendChild(modal);
             document.getElementById('closeModalBtn').onclick = () => {
-                模态.移除();
+                modal.remove();
                 if(type === 'marriage') { unlockedMarriage=true; localStorage.setItem('unlock_marriage','true'); showMarriageDetailUnlocked(); }
                 if(type === 'year') { unlockedYear=true; localStorage.setItem('unlock_year','true'); showMarriageYearUnlocked(); }
                 if(type === 'fengshui') { unlockedFengshui=true; localStorage.setItem('unlock_fengshui','true'); let dir = document.getElementById('houseDirection').value; showFengshuiUnlockedDetail(dir); document.getElementById('fengshuiDetailLock').innerHTML = '<div class="badge-unlocked">已解锁流年方位化解布局秘法</div>'; }
@@ -325,23 +338,23 @@
     }
 
     // 解锁状态
-    让 unlockedMarriage = localStorage.getItem('unlock_marriage') === 'true';
-    让 unlockedYear = localStorage.getItem('unlock_year') === 'true';
+    let unlockedMarriage = localStorage.getItem('unlock_marriage') === 'true';
+    let unlockedYear = localStorage.getItem('unlock_year') === 'true';
     let unlockedFengshui = localStorage.getItem('unlock_fengshui') === 'true';
 
     // 事件绑定
-    函数 bindEvents() {
+    function bindEvents() {
         document.querySelectorAll('.pay-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 let type = btn.getAttribute('data-type');
                 handlePayment(type, e);
             });
         });
-        document.getElementById('refreshBaziBtn')addEventListener('click', => {refreshBazi;if (unlockedMarriage) showMarriageDetailUnlocked;if (unlockedYear) showMarriageYearUnlocked;});}
-        document.getElementById('refreshZiweiBtn').addEventListener('click', 刷新紫微;
+        document.getElementById('refreshBaziBtn').addEventListener('click', () => { refreshBazi(); if(unlockedMarriage) showMarriageDetailUnlocked(); if(unlockedYear) showMarriageYearUnlocked(); });
+        document.getElementById('refreshZiweiBtn').addEventListener('click', refreshZiwei);
         document.getElementById('refreshFengshuiBtn').addEventListener('click', renderBaguaGrid);
-        document.getElementById('previewMarriageBtn')addEventListener('click',previewMarriageSimple);
-        document.getElementById('previewYearBtn')addEventListener('click', => {
+        document.getElementById('previewMarriageBtn').addEventListener('click', previewMarriageSimple);
+        document.getElementById('previewYearBtn').addEventListener('click', () => {
             document.getElementById('yearPreviewText').innerHTML = '🌟 根据流年运势，未来几年有婚动迹象，详细年份及红鸾星动日期需支付6.6元解锁完整报告。';
         });
         document.getElementById('calendarType').addEventListener('change', (e) => {
@@ -357,29 +370,33 @@
         document.getElementById('lunarYMDgroup').style.display = 'none';
         if (isLunarReady()) {
             refreshBazi();
-            刷新紫微();
+            refreshZiwei();
             renderBaguaGrid();
             如果(已解锁婚姻) 显示婚姻详情已解锁();
             如果(已解锁年份) 显示婚姻年份已解锁();
-            如果(unlockedFengshui) { 让 目录 = 文档.getElementById(('房屋方向')).value; showFengshuiUnlockedDetail(dir); }
+            如果(unlockedFengshui) { let dir = document.getElementById(('houseDirection')).value; showFengshuiUnlockedDetail(dir); }
         } else {
+            // 等待库加载
             let checkInterval = setInterval(() => {
                 if (isLunarReady()) {
                     clearInterval(checkInterval);
                     refreshBazi();
-                    刷新紫微();
+                    refreshZiwei();
                     renderBaguaGrid();
                     如果(已解锁婚姻) 显示婚姻详情已解锁();
                     如果(已解锁年份) 显示婚姻年份已解锁();
                     如果(已解锁风水) 显示风水解锁详情(文档.getElementById('房屋朝向').值);
                 }
             }, 200);
+            // 超时提示
             setTimeout(() => {
                 如果 (!是否为农历就绪()) {
                     clearInterval(checkInterval);
-                    document.getElementById('baziContent').innerHTML = '<div class="error-msg">排盘库加载超时，请检查网络后刷新页面。</div>';
+                    document.getElementById('baziContent')innerHTML='
+排盘库加载失败，请刷新页面重试。如持续失败，可尝试更换网络环境。
+';
                 }
-            }, 30000);
+            }, 10000);
         }
     }
     init();
