@@ -6,7 +6,7 @@
     <title>三世命理 | 八字·紫微·八宅风水</title>
     <!-- 引入 Lunar 专业排盘库 (阴阳历转换/八字/紫微斗数) -->
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.8.2/lunar.min.js"></script>
-    <!-- Font Awesome 6 (免费图标) -->
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -14,20 +14,16 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: #f5efe7;
             font-family: 'Segoe UI', '华文楷书', 'Microsoft YaHei', 'PingFang SC', Roboto, serif;
             color: #2c2418;
             padding: 20px;
         }
-
         .container {
             max-width: 1300px;
             margin: 0 auto;
         }
-
-        /* 头部 */
         .hero {
             text-align: center;
             padding: 20px 0 10px;
@@ -53,15 +49,12 @@
             margin: 15px 0;
             border-radius: 8px;
         }
-
-        /* 卡片通用样式 */
         .card {
             background: #fffef7;
             border-radius: 28px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.05);
             margin-bottom: 35px;
             padding: 20px 24px;
-            transition: all 0.2s;
             border: 1px solid #e6ddcf;
         }
         .card-title {
@@ -97,7 +90,6 @@
             font-size: 0.9rem;
             width: 100%;
             outline: none;
-            transition: 0.2s;
         }
         button {
             background: #e7cfb5;
@@ -109,7 +101,6 @@
         button.primary {
             background: #c7793c;
             color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .pay-btn-small {
             background: #f0dbb4;
@@ -142,7 +133,6 @@
         }
         th {
             background: #f3e9dd;
-            font-weight: bold;
         }
         .lock-section {
             background: #faf2e6;
@@ -215,20 +205,6 @@
             font-size: 0.8rem;
             display: inline-block;
         }
-        hr {
-            margin: 15px 0;
-            border-color: #e2cfb5;
-        }
-        footer {
-            text-align: center;
-            margin: 40px 0 20px;
-            font-size: 0.7rem;
-            color: #aa8c70;
-        }
-        i.icon {
-            margin-right: 6px;
-        }
-        /* 广告预留样式 */
         .ad-space {
             background: #eae2d4;
             border: 2px dashed #b98f64;
@@ -238,8 +214,6 @@
             margin: 30px 0 20px;
             color: #8b694c;
             font-weight: bold;
-            font-size: 1rem;
-            letter-spacing: 2px;
         }
         .contact-info {
             background: #fff3e6;
@@ -250,9 +224,11 @@
             font-size: 0.9rem;
             border: 1px solid #e2cbb0;
         }
-        .contact-info i {
-            color: #c7793c;
-            margin-right: 8px;
+        footer {
+            text-align: center;
+            margin: 40px 0 20px;
+            font-size: 0.7rem;
+            color: #aa8c70;
         }
         @media (max-width: 680px) {
             .card { padding: 15px; }
@@ -270,7 +246,7 @@
         <i class="fas fa-shield-alt"></i> 免责声明：本网站内容仅供传统文化研究及娱乐参考，所有命理测算结果不应作为人生决策唯一依据。命运由己，理性看待。开发者不承担任何因使用本服务而产生的直接或间接责任。
     </div>
 
-    <!-- ========= 第一部分：八字命盘（独立卡片） ========= -->
+    <!-- ========= 八字命盘 ========= -->
     <div class="card">
         <div class="card-title"><i class="fas fa-chart-line"></i> 八字命盘 · 大运流年</div>
         <div class="form-row">
@@ -288,25 +264,25 @@
             <div class="form-group"><label>⚥ 性别</label>
                 <select id="gender"><option value="0">女</option><option value="1">男</option></select>
             </div>
-            <div class="form-group"><button id="refreshBaziBtn" class="primary"><i class="fas fa-sync-alt"></i> 八字排盘</button></div>
+            <div class="form-group"><button id="refreshBaziBtn" class="primary"><i class="fas fa-sync-alt"></i> 排八字 & 大运</button></div>
         </div>
         <div id="baziDisplayArea">
-            <div class="bazi-grid" id="baziContent">加载中...</div>
-            <div style="margin-top: 20px;"><strong>📖 大运流年 · 喜忌详解</strong><div id="dayunLiunianInfo">请点击排盘</div></div>
+            <div class="bazi-grid" id="baziContent">请点击上方按钮排盘</div>
+            <div style="margin-top: 20px;"><strong>📖 大运流年 · 喜忌详解</strong><div id="dayunLiunianInfo">未排盘</div></div>
         </div>
     </div>
 
-    <!-- ========= 第二部分：紫微斗数命盘（独立卡片） ========= -->
+    <!-- ========= 紫微斗数 ========= -->
     <div class="card">
         <div class="card-title"><i class="fas fa-star-of-life"></i> 紫微斗数 · 十二宫精析</div>
         <div class="form-row">
-            <div class="form-group"><label>✨ 基于上方相同生辰数据</label><button id="refreshZiweiBtn" class="primary" style="background:#9b6e4e;"><i class="fas fa-calculator"></i> 重新排紫微斗数</button></div>
+            <div class="form-group"><label>✨ 基于上方生辰数据</label><button id="refreshZiweiBtn" class="primary" style="background:#9b6e4e;"><i class="fas fa-calculator"></i> 排紫微斗数</button></div>
         </div>
-        <div id="ziweiPanel" class="ziwei-table">等待排盘（请点击上方按钮或先进行八字排盘）</div>
-        <div class="disclaimer" style="margin-top:12px; font-size:0.7rem;"><i class="fas fa-info-circle"></i> 紫微斗数排盘依据您填写的出生时间（阳历/农历自动转换），精准计算十二宫星曜分布。</div>
+        <div id="ziweiPanel" class="ziwei-table">等待排盘</div>
+        <div class="disclaimer" style="margin-top:12px; font-size:0.7rem;"><i class="fas fa-info-circle"></i> 紫微斗数排盘依据您填写的出生时间，精准计算十二宫星曜分布。</div>
     </div>
 
-    <!-- ========= 第三部分：合婚 + 最大结婚年份 (独立付费解锁) ========= -->
+    <!-- ========= 合婚 + 结婚年份 ========= -->
     <div class="grid-2col">
         <!-- 八字合婚模块 -->
         <div class="card">
@@ -322,8 +298,12 @@
                 <div id="marriagePreviewMsg" style="font-size:0.8rem; color:#7b5a44;">点击预览可看到简要匹配，完整合婚报告需打赏解锁</div>
                 <div id="marriageLockedContent" class="lock-section">
                     <div class="price-tag"><span><span class="current-price">￥9.90</span> <span class="original-price">￥118.00</span></span><span>距优惠结束模拟</span></div>
-                    <div class="pay-options"><div class="pay-btn wechat" data-type="marriage"><i class="fab fa-weixin"></i> 微信支付</div><div class="pay-btn alipay" data-type="marriage"><i class="fab fa-alipay"></i> 支付宝</div></div>
-                    <div id="marriageDetail" style="margin-top: 12px; color:#b37b48;">🔒 支付9.9元解锁完整合婚分析(八字合婚喜忌、匹配建议)</div>
+                    <div class="pay-options">
+                        <!-- 真实支付：请将下面的链接换成您的微信/支付宝收款二维码或支付链接 -->
+                        <a href="#" class="pay-btn wechat" data-type="marriage" data-realpay="https://your-wechat-pay-link.com" target="_blank"><i class="fab fa-weixin"></i> 微信支付</a>
+                        <a href="#" class="pay-btn alipay" data-type="marriage" data-realpay="https://your-alipay-link.com" target="_blank"><i class="fab fa-alipay"></i> 支付宝</a>
+                    </div>
+                    <div id="marriageDetail" style="margin-top: 12px; color:#b37b48;">🔒 支付9.9元解锁完整合婚分析</div>
                 </div>
             </div>
         </div>
@@ -332,19 +312,22 @@
         <div class="card">
             <div class="card-title"><i class="fas fa-calendar-check"></i> 测算最佳结婚年份</div>
             <div id="marriageYearUnlockArea">
-                <div style="margin-bottom: 8px;">基于当前八字大运流年，结合红鸾天喜推算未来十年最利婚缘年份</div>
+                <div style="margin-bottom: 8px;">基于您已排好的八字（请先在上方完成八字排盘），结合红鸾天喜推算未来十年最利婚缘年份。</div>
                 <button id="previewYearBtn" class="pay-btn-small">免费预览提示</button>
-                <div id="yearPreviewText" style="font-size:0.75rem; margin: 8px 0;">点击预览可简单查看提示，详细年份及原理需解锁</div>
+                <div id="yearPreviewText" style="font-size:0.75rem; margin: 8px 0;">点击预览可简单查看提示</div>
                 <div class="lock-section">
                     <div class="price-tag"><span><span class="current-price">￥6.60</span> <span class="original-price">￥88.00</span></span></div>
-                    <div class="pay-options"><div class="pay-btn wechat" data-type="year"><i class="fab fa-weixin"></i> 微信支付</div><div class="pay-btn alipay" data-type="year"><i class="fab fa-alipay"></i> 支付宝</div></div>
+                    <div class="pay-options">
+                        <a href="#" class="pay-btn wechat" data-type="year" data-realpay="https://your-wechat-pay-link.com" target="_blank"><i class="fab fa-weixin"></i> 微信支付</a>
+                        <a href="#" class="pay-btn alipay" data-type="year" data-realpay="https://your-alipay-link.com" target="_blank"><i class="fab fa-alipay"></i> 支付宝</a>
+                    </div>
                     <div id="yearDetailLocked">🔒 支付6.6元解锁最可能结婚年份+流年情感分析</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ========= 第四部分：八宅风水 (苏民峰流派) ========= -->
+    <!-- ========= 八宅风水 ========= -->
     <div class="card">
         <div class="card-title"><i class="fas fa-compass"></i> 八宅风水 · 苏民峰真传</div>
         <div class="form-row"><div class="form-group"><label>🏠 选择宅向(坐山)</label>
@@ -353,15 +336,18 @@
         <div id="baguaGridDisplay" style="background:#f9f3ea; border-radius: 24px; padding: 15px; margin: 12px 0;"></div>
         <div class="lock-section" id="fengshuiUnlockSection">
             <div class="price-tag"><span><span class="current-price">￥8.80</span> <span class="original-price">￥99.00</span></span><span>流年方位化解布局 · 苏民峰心法</span></div>
-            <div class="pay-options"><div class="pay-btn wechat" data-type="fengshui"><i class="fab fa-weixin"></i> 微信支付</div><div class="pay-btn alipay" data-type="fengshui"><i class="fab fa-alipay"></i> 支付宝</div></div>
+            <div class="pay-options">
+                <a href="#" class="pay-btn wechat" data-type="fengshui" data-realpay="https://your-wechat-pay-link.com" target="_blank"><i class="fab fa-weixin"></i> 微信支付</a>
+                <a href="#" class="pay-btn alipay" data-type="fengshui" data-realpay="https://your-alipay-link.com" target="_blank"><i class="fab fa-alipay"></i> 支付宝</a>
+            </div>
             <div id="fengshuiDetailLock">🔒 支付8.8元解锁本宅向2026年流年各方位布局、化解物品及催吉方法</div>
         </div>
         <div id="fengshuiUnlockedContent" style="display:none; background:#f6efde; border-radius: 20px; padding: 15px;"></div>
     </div>
 
-    <!-- 广告预留位 + 联系方式 -->
+    <!-- 广告与联系方式 -->
     <div class="ad-space">
-        <i class="fas fa-ad" style="margin-right: 8px;"></i> 广告位预留 · 欢迎合作洽谈
+        <i class="fas fa-ad"></i> 广告位预留 · 欢迎合作洽谈
     </div>
     <div style="text-align: center; margin-bottom: 20px;">
         <div class="contact-info">
@@ -372,32 +358,26 @@
     <footer>© 三世命理 · 传统文化传承  |  本工具基于天文历法 & 紫微斗数真传排盘  |  理性参考 顺其自然</footer>
 </div>
 
-<!-- 模拟支付模态框 -->
-<div id="payModal" class="modal"><div class="modal-content"><i class="fas fa-check-circle" style="font-size: 48px; color: #2b7e3a;"></i><h3>模拟支付成功</h3><p>感谢您的打赏支持！内容已解锁。</p><button id="closeModalBtn" style="margin-top:12px;">确定</button></div></div>
-
 <script>
-    // ---------- 解锁状态管理 (localStorage) ----------
+    // ==================== 解锁状态管理 ====================
     let unlockedMarriage = localStorage.getItem('unlock_marriage') === 'true';
     let unlockedYear = localStorage.getItem('unlock_year') === 'true';
     let unlockedFengshui = localStorage.getItem('unlock_fengshui') === 'true';
 
-    // 全局当前八字对象、紫微斗数对象、当前命主公历日期等
     let currentLunarDate = null;
     let currentEightChar = null;
-    let currentAstrolabe = null;
-    let currentGender = 1; // 1男0女
+    let currentGender = 1;
 
-    // 辅助: 根据表单获取出生时刻公历Date对象 (处理阴阳历)
+    // 获取出生时间
     function getBirthDateTime() {
         let calType = document.getElementById('calendarType').value;
         let hourIdx = parseInt(document.getElementById('timeIndex').value);
-        let hour = hourIdx * 2 + (hourIdx>=6?1:0); // 粗略小时中间值
-        let minute = 0;
+        let hour = hourIdx * 2 + (hourIdx>=6?1:0);
         if(calType === 'solar') {
             let dateStr = document.getElementById('solarDate').value;
             let d = new Date(dateStr);
             if(isNaN(d.getTime())) d = new Date(1990,4,15);
-            d.setHours(hour, minute, 0);
+            d.setHours(hour, 0, 0);
             return d;
         } else {
             let ly = parseInt(document.getElementById('lunarYear').value) || 1990;
@@ -405,12 +385,12 @@
             let ld = parseInt(document.getElementById('lunarDay').value) || 22;
             let lunar = Lunar.Lunar.fromYmd(ly, lm, ld);
             let solar = lunar.getSolar();
-            let d = new Date(solar.getYear(), solar.getMonth()-1, solar.getDay(), hour, minute, 0);
+            let d = new Date(solar.getYear(), solar.getMonth()-1, solar.getDay(), hour, 0, 0);
             return d;
         }
     }
 
-    // 刷新八字 & 大运流年喜忌
+    // 刷新八字 & 大运
     function refreshBazi() {
         let birthDate = getBirthDateTime();
         let genderVal = document.getElementById('gender').value;
@@ -419,29 +399,28 @@
         currentLunarDate = lunarObj;
         let eightChar = lunarObj.getEightChar();
         currentEightChar = eightChar;
-        // 八字四柱展示
-        let baziHtml = `表格<th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th>`;
-        baziHtml += ` <tr><td>${eightChar.getYear()}<br>${eightChar.getYearGanZhi()}</td><td>${eightChar.getMonth()}<br>${eightChar.getMonthGanZhi()}</td><td>${eightChar.getDay()}<br>${eightChar.getDayGanZhi()}</td><td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td></tr>`;
-        baziHtml += `<div style="margin-top:8px;"><strong>日主</strong> ${eightChar.getDayGan()} · 五行${eightChar.getDayWuXing()}  |  十神排列等详细可结合大运分析</div>`;
+        let baziHtml = `<table><tr><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr>
+            <tr><td>${eightChar.getYear()}<br>${eightChar.getYearGanZhi()}</td>
+            <td>${eightChar.getMonth()}<br>${eightChar.getMonthGanZhi()}</td>
+            <td>${eightChar.getDay()}<br>${eightChar.getDayGanZhi()}</td>
+            <td>${eightChar.getTime()}<br>${eightChar.getTimeGanZhi()}</td></tr></table>`;
+        baziHtml += `<div style="margin-top:8px;"><strong>日主</strong> ${eightChar.getDayGan()} · 五行${eightChar.getDayWuXing()}</div>`;
         document.getElementById('baziContent').innerHTML = baziHtml;
-        // 大运流年喜忌详解
         let daYunList = eightChar.getDaYun();
         let dayunHtml = `<div style="max-height:200px; overflow:auto;"><table><tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr>`;
         if(daYunList && daYunList.length){
             daYunList.forEach((dy,idx)=>{
-                let liuNianNote = `此大运五行喜忌：参考日主${eightChar.getDayGan()}，宜结合流年干支综合判断。`;
-                dayunHtml += `<tr><td>${idx+1}</td><td>${dy.getStartYear()}</td><td>${dy.getGanZhi()}</td><td>${liuNianNote}</td></tr>`;
+                dayunHtml += `<tr><td>${idx+1}</td><td>${dy.getStartYear()}</td><td>${dy.getGanZhi()}</td><td>参考日主${eightChar.getDayGan()}，结合流年干支综合判断。</td></tr>`;
             });
         } else { dayunHtml += `<tr><td colspan="4">大运数据生成中(参考万年历)</td></tr>`; }
-        dayunHtml += `</table></div><p class="disclaimer" style="font-size:0.7rem;">⚠️ 专业流年喜忌：日主强弱及用神根据四柱综合，建议咨询专业人士。此处基于八字基础显示大运。</p>`;
+        dayunHtml += `</table></div><p class="disclaimer" style="font-size:0.7rem;">⚠️ 专业流年喜忌：日主强弱及用神根据四柱综合，建议咨询专业人士。</p>`;
         document.getElementById('dayunLiunianInfo').innerHTML = dayunHtml;
     }
 
-    // 刷新紫微斗数排盘（独立读取当前表单数据）
+    // 紫微斗数排盘
     function refreshZiwei() {
         let birthDate = getBirthDateTime();
-        let genderVal = document.getElementById('gender').value;
-        let genderInt = parseInt(genderVal); // 1男0女
+        let genderInt = parseInt(document.getElementById('gender').value);
         try {
             let year = birthDate.getFullYear();
             let month = birthDate.getMonth()+1;
@@ -449,7 +428,6 @@
             let hourVal = birthDate.getHours();
             let minuteVal = birthDate.getMinutes();
             let astrolabe = Lunar.Astrolabe.fromBirth(year, month, day, hourVal, minuteVal, genderInt);
-            currentAstrolabe = astrolabe;
             let palaces = astrolabe.getPalaces();
             let ziweiHtml = `<table><tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr>`;
             for(let p of palaces){
@@ -460,17 +438,11 @@
             ziweiHtml += `</table><div style="font-size:0.7rem; margin-top:5px;">※ 紫微斗数排盘专业精准，十二宫格局完整</div>`;
             document.getElementById('ziweiPanel').innerHTML = ziweiHtml;
         } catch(e){
-            document.getElementById('ziweiPanel').innerHTML = `<span>紫微排盘参数有误，请确保日期有效，并点击重新排盘。</span>`;
+            document.getElementById('ziweiPanel').innerHTML = `<span>紫微排盘参数有误，请检查日期。</span>`;
         }
     }
 
-    // 同时刷新八字和紫微（用于初始化及联动）
-    function refreshAll() {
-        refreshBazi();
-        refreshZiwei();
-    }
-
-    // 八宅风水数据集（苏民峰法八宅游年）
+    // 八宅风水
     const baguaMap = {
         '坎': { '生气':'东南','延年':'南','天医':'东','伏位':'北','五鬼':'西南','六煞':'西','绝命':'西北','祸害':'东北' },
         '坤': { '生气':'东北','延年':'西北','天医':'西','伏位':'西南','五鬼':'东南','六煞':'北','绝命':'东','祸害':'南' },
@@ -484,8 +456,8 @@
     function renderBaguaGrid() {
         let dir = document.getElementById('houseDirection').value;
         let stars = baguaMap[dir];
-        if(!stars) return;
-        let html = `<h4>🏡 ${dir}宅 八宅吉凶星方位 (苏民峰传承)</h4><table><tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr><tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
+        let html = `<h4>🏡 ${dir}宅 八宅吉凶星方位 (苏民峰传承)</h4><table><tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>
+        <tr><td><strong>方位</strong></td><td>${stars.生气}</td><td>${stars.延年}</td><td>${stars.天医}</td><td>${stars.伏位}</td><td>${stars.五鬼}</td><td>${stars.六煞}</td><td>${stars.绝命}</td><td>${stars.祸害}</td></tr></table>`;
         document.getElementById('baguaGridDisplay').innerHTML = html;
         if(unlockedFengshui) showFengshuiUnlockedDetail(dir);
         else document.getElementById('fengshuiUnlockedContent').style.display = 'none';
@@ -501,77 +473,86 @@
             '艮':'艮宅流年：八白左辅到东北，旺财位；延年西方放陶瓷; 五鬼北方避水。',
             '离':'离宅流年：九紫右弼到正南，喜事位；生气东方放绿植; 绝命西北安泰山石。'
         };
-        let detail = detailMap[dir] || '依据苏民峰心法，请结合流年飞星调整卧室/大门方位，摆放相应风水物品 (水晶、葫芦、五帝钱等) 可催吉避凶。';
-        document.getElementById('fengshuiUnlockedContent').innerHTML = `<i class="fas fa-lock-open"></i> <strong>【解锁专享】${dir}宅流年化解与布局建议</strong><br>${detail}<br><small>注：结合2026年流年紫白飞星及八宅游年吉凶方位综合建议，趋吉避凶。</small>`;
+        let detail = detailMap[dir] || '依据苏民峰心法，请结合流年飞星调整卧室/大门方位，摆放相应风水物品。';
+        document.getElementById('fengshuiUnlockedContent').innerHTML = `<i class="fas fa-lock-open"></i> <strong>【解锁专享】${dir}宅流年化解与布局建议</strong><br>${detail}<br><small>注：结合2026年流年紫白飞星及八宅游年吉凶方位综合建议。</small>`;
         document.getElementById('fengshuiUnlockedContent').style.display = 'block';
     }
 
-    // 合婚预览简易信息 (不打赏只显示大概)
+    // 合婚 & 结婚年份
     function previewMarriageSimple() {
-        let msg = '合婚需解锁完整版（9.9元）包含双方八字匹配、十神互补、纳音及婚恋建议，解锁后获得专业详批。';
-        document.getElementById('marriagePreviewMsg').innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+        document.getElementById('marriagePreviewMsg').innerHTML = `<i class="fas fa-info-circle"></i> 合婚需解锁完整版（9.9元）包含双方八字匹配、十神互补、纳音及婚恋建议。`;
     }
-    function showMarriageDetailUnlocked(){
+    function showMarriageDetailUnlocked() {
         if(!unlockedMarriage) return;
-        let partnerCal = document.getElementById('partnerCalendar').value;
         let partnerDateStr = document.getElementById('partnerSolarDate').value;
         let partnerHour = parseInt(document.getElementById('partnerTime').value);
-        let partnerGender = parseInt(document.getElementById('partnerGender').value);
         let pDate = new Date(partnerDateStr);
         pDate.setHours(partnerHour*2+1);
         let lunarPartner = Lunar.Lunar.fromDate(pDate);
         let ec1 = currentEightChar;
         if(!ec1) { document.getElementById('marriageDetail').innerHTML = '请先生成八字再解锁合婚。'; return; }
         let ec2 = lunarPartner.getEightChar();
-        let analysis = `【合婚详批】日柱：${ec1.getDayGanZhi()} 与 ${ec2.getDayGanZhi()}，${(ec1.getDayGan()===ec2.getDayGan())?'日元比和':'需互补'}。子平合婚法：年柱相生，月柱协调，婚缘指数良好，具体婚恋建议可多沟通。大运同步度中等，适合晚婚。三合六冲: 生肖${currentLunarDate.getYearShengXiao()}配${lunarPartner.getYearShengXiao()}，中吉。`;
-        document.getElementById('marriageDetail').innerHTML = `<div class="badge-unlocked">已解锁</div><div>${analysis}</div><div style="margin-top:8px;">※ 八字合婚建议根据双方五行喜忌，可择吉日婚配。</div>`;
+        let analysis = `【合婚详批】日柱：${ec1.getDayGanZhi()} 与 ${ec2.getDayGanZhi()}，${(ec1.getDayGan()===ec2.getDayGan())?'日元比和':'需互补'}。子平合婚法：年柱相生，月柱协调，婚缘指数良好。三合六冲: 生肖${currentLunarDate.getYearShengXiao()}配${lunarPartner.getYearShengXiao()}，中吉。`;
+        document.getElementById('marriageDetail').innerHTML = `<div class="badge-unlocked">已解锁</div><div>${analysis}</div>`;
     }
-    function showMarriageYearUnlocked(){
+    function showMarriageYearUnlocked() {
         if(!unlockedYear) return;
-        let baZiNow = currentEightChar;
-        if(!baZiNow) { document.getElementById('yearDetailLocked').innerHTML = '请先生成八字再解锁结婚年份。'; return; }
-        let analysisYear = `【最佳结婚年份】根据流年红鸾、天喜及日柱夫妻宫合参，未来十年内，${(new Date().getFullYear()+2)}年、${(new Date().getFullYear()+5)}年、${(new Date().getFullYear()+8)}年为婚缘最旺年份，易遇正缘，宜把握。流年遇财官印相生，大利婚庆。`;
-        document.getElementById('yearDetailLocked').innerHTML = `<div class="badge-unlocked">已解锁</div><div>${analysisYear}</div><div>详细流年星曜与八字动婚标志请咨询专业命理师。</div>`;
+        if(!currentEightChar) { document.getElementById('yearDetailLocked').innerHTML = '请先生成八字再解锁结婚年份。'; return; }
+        let analysisYear = `【最佳结婚年份】根据流年红鸾、天喜及日柱夫妻宫合参，未来十年内，${(new Date().getFullYear()+2)}年、${(new Date().getFullYear()+5)}年、${(new Date().getFullYear()+8)}年为婚缘最旺年份，易遇正缘，宜把握。`;
+        document.getElementById('yearDetailLocked').innerHTML = `<div class="badge-unlocked">已解锁</div><div>${analysisYear}</div>`;
     }
 
-    // 支付模拟
-    function showPayModal(type){
-        let modal = document.getElementById('payModal');
-        modal.style.display = 'flex';
-        let close = () => {
-            modal.style.display = 'none';
-            if(type === 'marriage') { unlockedMarriage=true; localStorage.setItem('unlock_marriage','true'); showMarriageDetailUnlocked(); }
-            if(type === 'year') { unlockedYear=true; localStorage.setItem('unlock_year','true'); showMarriageYearUnlocked(); }
-            if(type === 'fengshui') { unlockedFengshui=true; localStorage.setItem('unlock_fengshui','true'); let dir = document.getElementById('houseDirection').value; showFengshuiUnlockedDetail(dir); document.getElementById('fengshuiDetailLock').innerHTML = '<div class="badge-unlocked">已解锁流年方位化解布局秘法</div>'; }
-        };
-        document.getElementById('closeModalBtn').onclick = () => { close(); };
-        modal.onclick = (e) => { if(e.target === modal) close(); };
+    // 真实支付处理（模拟+真实跳转）
+    function handlePayment(type, event) {
+        event.preventDefault();
+        let target = event.currentTarget;
+        let realUrl = target.getAttribute('data-realpay');
+        // 如果配置了真实支付链接，则跳转
+        if(realUrl && realUrl !== '#' && realUrl !== 'https://your-wechat-pay-link.com') {
+            window.open(realUrl, '_blank');
+            // 可在此处增加后台通知，支付成功后解锁（需开发回调接口，此处仅演示）
+            alert('请完成支付后，返回页面点击“我已支付”按钮（需自行开发回调）或联系客服解锁。\n如需自动解锁，请配置支付回调接口。');
+        } else {
+            // 模拟支付（默认）
+            let modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `<div class="modal-content"><i class="fas fa-check-circle" style="font-size: 48px; color: #2b7e3a;"></i><h3>模拟支付成功</h3><p>感谢您的打赏支持！内容已解锁。</p><button id="closeModalBtn">确定</button></div>`;
+            document.body.appendChild(modal);
+            document.getElementById('closeModalBtn').onclick = () => {
+                modal.remove();
+                if(type === 'marriage') { unlockedMarriage=true; localStorage.setItem('unlock_marriage','true'); showMarriageDetailUnlocked(); }
+                if(type === 'year') { unlockedYear=true; localStorage.setItem('unlock_year','true'); showMarriageYearUnlocked(); }
+                if(type === 'fengshui') { unlockedFengshui=true; localStorage.setItem('unlock_fengshui','true'); let dir = document.getElementById('houseDirection').value; showFengshuiUnlockedDetail(dir); document.getElementById('fengshuiDetailLock').innerHTML = '<div class="badge-unlocked">已解锁流年方位化解布局秘法</div>'; }
+            };
+        }
     }
 
     // 事件绑定
     document.querySelectorAll('.pay-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             let type = btn.getAttribute('data-type');
-            if(type==='marriage') showPayModal('marriage');
-            else if(type==='year') showPayModal('year');
-            else if(type==='fengshui') showPayModal('fengshui');
+            handlePayment(type, e);
         });
     });
     document.getElementById('refreshBaziBtn').addEventListener('click', () => { refreshBazi(); if(unlockedMarriage) showMarriageDetailUnlocked(); if(unlockedYear) showMarriageYearUnlocked(); });
-    document.getElementById('refreshZiweiBtn').addEventListener('click', () => { refreshZiwei(); });
-    document.getElementById('refreshFengshuiBtn').addEventListener('click', () => { renderBaguaGrid(); });
+    document.getElementById('refreshZiweiBtn').addEventListener('click', refreshZiwei);
+    document.getElementById('refreshFengshuiBtn').addEventListener('click', renderBaguaGrid);
     document.getElementById('previewMarriageBtn').addEventListener('click', previewMarriageSimple);
-    document.getElementById('previewYearBtn').addEventListener('click', () => { document.getElementById('yearPreviewText').innerHTML = '🌟 根据流年运势，未来几年有婚动迹象，详细年份及红鸾星动日期需支付6.6元解锁完整报告。'; });
+    document.getElementById('previewYearBtn').addEventListener('click', () => {
+        document.getElementById('yearPreviewText').innerHTML = '🌟 根据流年运势，未来几年有婚动迹象，详细年份及红鸾星动日期需支付6.6元解锁完整报告。';
+    });
     document.getElementById('calendarType').addEventListener('change', (e) => {
         let isLunar = e.target.value === 'lunar';
         document.getElementById('lunarYMDgroup').style.display = isLunar ? 'flex' : 'none';
         document.getElementById('solarDate').style.display = isLunar ? 'none' : 'block';
-        if(!isLunar) document.getElementById('solarDate').style.display = 'block';
     });
+
     // 初始化
-    function init(){
+    function init() {
         document.getElementById('lunarYMDgroup').style.display = 'none';
-        refreshAll();
+        refreshBazi();
+        refreshZiwei();
         renderBaguaGrid();
         if(unlockedMarriage) showMarriageDetailUnlocked();
         if(unlockedYear) showMarriageYearUnlocked();
