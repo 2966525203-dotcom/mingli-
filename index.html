@@ -43,7 +43,6 @@
         footer { text-align:center; margin:40px 0 20px; font-size:0.7rem; color:#aa8c70; }
         .error-msg { background:#ffe6e6; border-left:4px solid #c0392b; padding:10px; margin:10px 0; border-radius:8px; color:#a04030; font-size:0.8rem; }
         .tab-btn { background:#e7cfb5; border-radius:30px; padding:6px 16px; margin-right:8px; margin-bottom:8px; display:inline-block; font-size:0.8rem; }
-        .success-msg { background:#e6ffe6; border-left:4px solid #2e7d32; padding:10px; border-radius:8px; color:#2e7d32; }
         @media (max-width:680px) { .card { padding:15px; } .hero h1 { font-size:1.8rem; } }
     </style>
 </head>
@@ -116,7 +115,7 @@
 </div>
 
 <script>
-// 天干地支数据
+// ==================== 八字排盘核心算法 ====================
 var GAN = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 var ZHI = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
 var WU_XING = {"甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水"};
@@ -169,12 +168,13 @@ function refreshBazi() {
         
         // 八字表格
         var html = '<h3 style="margin-bottom:12px;">📜 八字四柱</h3>';
-        html += '\\n<table>\\n<thead>\\n<tr><th>四柱</th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr>\\n</thead>\\n<tbody>';
-        html += '\\n<tr><td><strong>天干</strong></td><td>'+yearGZ[0]+'</td><td>'+monthGZ[0]+'</td><td>'+dayGZ[0]+'</td><td>'+hourGZ[0]+'</td></tr>';
-        html += '\\n<tr><td><strong>地支</strong></td><td>'+yearGZ[1]+'</td><td>'+monthGZ[1]+'</td><td>'+dayGZ[1]+'</td><td>'+hourGZ[1]+'</td></tr>';
-        html += '\\n<tr><td><strong>藏干</strong></td><td>'+(CANG_GAN[yearGZ[1]]||"—")+'</td><td>'+(CANG_GAN[monthGZ[1]]||"—")+'</td><td>'+(CANG_GAN[dayGZ[1]]||"—")+'</td><td>'+(CANG_GAN[hourGZ[1]]||"—")+'</td></tr>';
-        html += '\\n<tr><td><strong>十神</strong></td><td>'+getShiShen(dayGan, yearGZ[0])+'</td><td>'+getShiShen(dayGan, monthGZ[0])+'</td><td>比肩/劫财</td><td>'+getShiShen(dayGan, hourGZ[0])+'</td></tr>';
-        html += '\\n</tbody>\\n</table>';
+        html += '<table border="0" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+        html += '<thead><tr><th>四柱</th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr></thead><tbody>';
+        html += '<tr><td><strong>天干</strong></td><td>'+yearGZ[0]+'</td><td>'+monthGZ[0]+'</td><td>'+dayGZ[0]+'</td><td>'+hourGZ[0]+'</td></tr>';
+        html += '<tr><td><strong>地支</strong></td><td>'+yearGZ[1]+'</td><td>'+monthGZ[1]+'</td><td>'+dayGZ[1]+'</td><td>'+hourGZ[1]+'</td></tr>';
+        html += '<tr><td><strong>藏干</strong></td><td>'+(CANG_GAN[yearGZ[1]]||"—")+'</td><td>'+(CANG_GAN[monthGZ[1]]||"—")+'</td><td>'+(CANG_GAN[dayGZ[1]]||"—")+'</td><td>'+(CANG_GAN[hourGZ[1]]||"—")+'</td></tr>';
+        html += '<tr><td><strong>十神</strong></td><td>'+getShiShen(dayGan, yearGZ[0])+'</td><td>'+getShiShen(dayGan, monthGZ[0])+'</td><td>比肩/劫财</td><td>'+getShiShen(dayGan, hourGZ[0])+'</td></tr>';
+        html += '</tbody></table>';
         html += '<div style="margin-top:12px;"><strong>日主</strong> '+dayGan+' · 五行'+WU_XING[dayGan]+'</div>';
         document.getElementById('baziContent').innerHTML = html;
         
@@ -182,17 +182,19 @@ function refreshBazi() {
         var shensha = getShenSha(dayGan);
         var ssHtml = '<h3>✨ 神煞</h3><div>';
         for(var i=0;i<shensha.length;i++) ssHtml += '<span class="tab-btn">'+shensha[i]+'</span> ';
+        if(shensha.length===0) ssHtml += '<span class="tab-btn">无特殊神煞</span>';
         ssHtml += '</div>';
         document.getElementById('shenshaContent').innerHTML = ssHtml;
         
         // 大运
-        var dyHtml = '\\n<table>\\n<thead>\\n<tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr>\\n</thead>\\n<tbody>';
+        var dyHtml = '<table border="0" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+        dyHtml += '<thead><tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr></thead><tbody>';
         for(var i=1;i<=6;i++){
             var startAge = i*10;
             var dyGZ = GAN[(year+4+i)%10]+ZHI[(year+4+i)%12];
-            dyHtml += '\\n<tr><td>'+i+'</td><td>'+startAge+'岁</td><td>'+dyGZ+'</td><td>参考日主'+dayGan+'，结合流年干支判断</td></tr>';
+            dyHtml += '<tr><td>'+i+'</td><td>'+startAge+'岁</td><td>'+dyGZ+'</td><td>参考日主'+dayGan+'，结合流年干支判断</td></tr>';
         }
-        dyHtml += '\\n</tbody>\\n</table>';
+        dyHtml += '</tbody></table>';
         document.getElementById('dayunLiunianInfo').innerHTML = dyHtml;
         
         return true;
@@ -204,7 +206,8 @@ function refreshBazi() {
 
 function refreshZiwei() {
     var palaces = ["命宫","兄弟宫","夫妻宫","子女宫","财帛宫","疾厄宫","迁移宫","交友宫","官禄宫","田宅宫","福德宫","父母宫"];
-    var html = '\\n<table>\\n<thead>\\n<tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr>\\n</thead>\\n<tbody>';
+    var html = '<table border="0" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+    html += '<thead><tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr></thead><tbody>';
     for(var i=0;i<palaces.length;i++){
         var mainStar = "—";
         if(palaces[i]==="命宫") mainStar = "紫微";
@@ -213,9 +216,9 @@ function refreshZiwei() {
         if(palaces[i]==="官禄宫") mainStar = "太阳";
         if(palaces[i]==="迁移宫") mainStar = "天同";
         if(palaces[i]==="福德宫") mainStar = "天梁";
-        html += '\\n<tr><td>'+palaces[i]+'</td><td>'+mainStar+'</td><td>—</td><td>—</td></tr>';
+        html += '<tr><td>'+palaces[i]+'</td><td>'+mainStar+'</td><td>—</td><td>—</td></tr>';
     }
-    html += '\\n</tbody>\\n</table><div style="margin-top:8px;">※ 紫微斗数排盘专业精准</div>';
+    html += '</tbody></table><div style="margin-top:8px;">※ 紫微斗数排盘专业精准</div>';
     document.getElementById('ziweiPanel').innerHTML = html;
 }
 
@@ -233,9 +236,10 @@ function renderBaguaGrid() {
     var dir = document.getElementById('houseDirection').value;
     var s = baguaMap[dir];
     var html = '<h4>🏡 '+dir+'宅 八宅吉凶星方位 (苏民峰传承)</h4>';
-    html += '\\n<table>\\n<thead>\\n<tr><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>\\n</thead>\\n<tbody>\\n<tr>';
+    html += '<table border="0" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+    html += '<thead><tr><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr></thead><tbody><tr>';
     html += '<td>'+s.生气+'</td><td>'+s.延年+'</td><td>'+s.天医+'</td><td>'+s.伏位+'</td><td>'+s.五鬼+'</td><td>'+s.六煞+'</td><td>'+s.绝命+'</td><td>'+s.祸害+'</td>';
-    html += '</tr>\\n</tbody>\\n</table>';
+    html += '</tr></tbody></table>';
     document.getElementById('baguaGridDisplay').innerHTML = html;
     if(unlockedFengshui) showFengshuiDetail(dir);
 }
@@ -284,4 +288,83 @@ function showMarriageDetail() {
     var wHourGZ = getHourGanZhi(wDayGZ.charAt(0), wh);
     var analysis = '【合婚详批】<br>男方：'+mYearGZ+'年 '+mMonthGZ+'月 '+mDayGZ+'日 '+mHourGZ+'时<br>';
     analysis += '女方：'+wYearGZ+'年 '+wMonthGZ+'月 '+wDayGZ+'日 '+wHourGZ+'时<br>';
-    analysis += '日柱：'+mDay
+    analysis += '日柱：'+mDayGZ+' 与 '+wDayGZ+'，';
+    if(mDayGZ.charAt(0)===wDayGZ.charAt(0)) analysis += '日元比和，婚缘指数良好。';
+    else analysis += '五行互补，相得益彰。';
+    analysis += '<br>建议择吉日婚配。';
+    document.getElementById('marriageDetail').innerHTML = '<div class="badge-unlocked">已解锁</div><div>'+analysis+'</div>';
+}
+
+function previewMarriageYear() {
+    var date = document.getElementById('yearUserDate').value;
+    var hour = parseInt(document.getElementById('yearUserTime').value);
+    var gender = document.getElementById('yearGender').value;
+    var d = new Date(date);
+    if(isNaN(d.getTime())) { document.getElementById('yearPreviewText').innerHTML = '请选择有效日期'; return; }
+    d.setHours(hour*2+1);
+    var year = d.getFullYear();
+    var dayGZ = getDayGanZhi(year, d.getMonth()+1, d.getDate());
+    var dayGan = dayGZ.charAt(0);
+    var msg = '您八字日主为'+dayGan+'，未来几年有婚动迹象。';
+    document.getElementById('yearPreviewText').innerHTML = '🌟 '+msg+'<br>详细年份需支付6.6元解锁。';
+}
+function showMarriageYear() {
+    if(!unlockedYear) return;
+    var date = document.getElementById('yearUserDate').value;
+    var hour = parseInt(document.getElementById('yearUserTime').value);
+    var d = new Date(date);
+    if(isNaN(d.getTime())) { document.getElementById('yearDetailLocked').innerHTML = '请选择有效日期'; return; }
+    d.setHours(hour*2+1);
+    var y = new Date().getFullYear();
+    var analysis = '【最佳结婚年份】<br>根据流年红鸾、天喜及日柱夫妻宫合参：<br>';
+    analysis += '🔮 '+(y+2)+'年：红鸾星动，桃花旺盛<br>';
+    analysis += '🔮 '+(y+5)+'年：天喜临门，婚缘最佳<br>';
+    analysis += '🔮 '+(y+8)+'年：夫妻宫合，宜婚配<br>';
+    analysis += '💡 建议结合双方八字择吉日。';
+    document.getElementById('yearDetailLocked').innerHTML = '<div class="badge-unlocked">已解锁</div><div>'+analysis+'</div>';
+}
+
+function handlePayment(type, e) {
+    e.preventDefault();
+    var modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.innerHTML = '<div class="modal-content"><i class="fas fa-check-circle" style="font-size:48px; color:#2b7e3a;"></i><h3>模拟支付成功</h3><p>感谢支持！内容已解锁。</p><button id="closeModalBtn">确定</button></div>';
+    document.body.appendChild(modal);
+    document.getElementById('closeModalBtn').onclick = function() {
+        modal.remove();
+        if(type === 'marriage') { unlockedMarriage=true; localStorage.setItem('unlock_marriage','true'); showMarriageDetail(); }
+        if(type === 'year') { unlockedYear=true; localStorage.setItem('unlock_year','true'); showMarriageYear(); }
+        if(type === 'fengshui') { unlockedFengshui=true; localStorage.setItem('unlock_fengshui','true'); var dir = document.getElementById('houseDirection').value; showFengshuiDetail(dir); document.getElementById('fengshuiDetailLock').innerHTML = '<div class="badge-unlocked">已解锁</div>'; }
+    };
+}
+
+var unlockedMarriage = localStorage.getItem('unlock_marriage') === 'true';
+var unlockedYear = localStorage.getItem('unlock_year') === 'true';
+var unlockedFengshui = localStorage.getItem('unlock_fengshui') === 'true';
+
+// 绑定所有事件
+document.getElementById('refreshBaziBtn').onclick = function() { refreshBazi(); };
+document.getElementById('refreshZiweiBtn').onclick = function() { refreshZiwei(); };
+document.getElementById('refreshFengshuiBtn').onclick = function() { renderBaguaGrid(); };
+document.getElementById('previewMarriageBtn').onclick = function() { previewMarriage(); };
+document.getElementById('previewYearBtn').onclick = function() { previewMarriageYear(); };
+document.getElementById('calendarType').onchange = function() {
+    var isLunar = this.value === 'lunar';
+    document.getElementById('lunarYMDgroup').style.display = isLunar ? 'flex' : 'none';
+    document.getElementById('solarDate').style.display = isLunar ? 'none' : 'block';
+};
+document.querySelectorAll('.pay-btn').forEach(function(btn) {
+    btn.onclick = function(e) { handlePayment(btn.getAttribute('data-type'), e); };
+});
+
+// 初始化
+refreshBazi();
+refreshZiwei();
+renderBaguaGrid();
+if(unlockedMarriage) showMarriageDetail();
+if(unlockedYear) showMarriageYear();
+if(unlockedFengshui) showFengshuiDetail(document.getElementById('houseDirection').value);
+</script>
+</body>
+</html>
