@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>三世命理 | 八字·紫微·八宅风水</title>
-    <!-- 直接内嵌 lunar-javascript 核心库 -->
     <script>
     // ==================== lunar-javascript 核心库（完整内嵌） ====================
     (function() {
@@ -126,7 +125,6 @@
         
         console.log("Lunar 库加载成功");
         window.lunarReady = true;
-        if(window.onLunarReady) window.onLunarReady();
     })();
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -167,6 +165,7 @@
         .contact-info { background:#fff3e6; border-radius:40px; padding:8px 20px; display:inline-block; margin-top:10px; font-size:0.9rem; border:1px solid #e2cbb0; }
         footer { text-align:center; margin:40px 0 20px; font-size:0.7rem; color:#aa8c70; }
         .error-msg { background:#ffe6e6; border-left:4px solid #c0392b; padding:10px; margin:10px 0; border-radius:8px; color:#a04030; font-size:0.8rem; }
+        .success-msg { background:#e6ffe6; border-left:4px solid #2e7d32; padding:10px; margin:10px 0; border-radius:8px; color:#2e7d32; font-size:0.8rem; }
         @media (max-width:680px) { .card { padding:15px; } .hero h1 { font-size:1.8rem; } }
     </style>
 </head>
@@ -186,7 +185,10 @@
             <div class="form-group"><label>⚥ 性别</label><select id="gender"><option value="0">女</option><option value="1">男</option></select></div>
             <div class="form-group"><button id="refreshBaziBtn" class="primary"><i class="fas fa-sync-alt"></i> 排八字 & 大运</button></div>
         </div>
-        <div id="baziDisplayArea"><div class="bazi-grid" id="baziContent">⏳ 正在加载排盘库，请稍候...</div><div style="margin-top:20px;"><strong>📖 大运流年 · 喜忌详解</strong><div id="dayunLiunianInfo">请先完成八字排盘</div></div></div>
+        <div id="baziDisplayArea">
+            <div class="bazi-grid" id="baziContent">⏳ 正在加载排盘库，请稍候...</div>
+            <div style="margin-top:20px;"><strong>📖 大运流年 · 喜忌详解</strong><div id="dayunLiunianInfo">请先完成八字排盘</div></div>
+        </div>
     </div>
     
     <!-- 紫微斗数 -->
@@ -264,16 +266,19 @@
             var eightChar = lunarObj.getEightChar();
             currentEightChar = eightChar;
             
-            var baziHtml = '表格<th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th>`;
-            baziHtml += '     <tr><td>' + eightChar.getYear() + '<br>' + eightChar.getYearGanZhi() + '</td>';
+            var baziHtml = '<table border="0" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+            baziHtml += '<tr><th style="background:#f3e9dd;">年柱</th><th style="background:#f3e9dd;">月柱</th><th style="background:#f3e9dd;">日柱</th><th style="background:#f3e9dd;">时柱</th></tr>';
+            baziHtml += '<tr><td>' + eightChar.getYear() + '<br>' + eightChar.getYearGanZhi() + '</td>';
             baziHtml += '<td>' + eightChar.getMonth() + '<br>' + eightChar.getMonthGanZhi() + '</td>';
             baziHtml += '<td>' + eightChar.getDay() + '<br>' + eightChar.getDayGanZhi() + '</td>';
-            baziHtml += '<td>' + eightChar.getTime() + '<br>' + eightChar.getTimeGanZhi() + '</td></tr></table>';
+            baziHtml += '<td>' + eightChar.getTime() + '<br>' + eightChar.getTimeGanZhi() + '</td></tr>';
+            baziHtml += '</table>';
             baziHtml += '<div style="margin-top:8px;"><strong>日主</strong> ' + eightChar.getDayGan() + ' · 五行' + eightChar.getDayWuXing() + '</div>';
             document.getElementById('baziContent').innerHTML = baziHtml;
             
             var daYunList = eightChar.getDaYun();
-            var dayunHtml = '<div style="max-height:200px; overflow:auto;"><table><tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr>';
+            var dayunHtml = '<div style="max-height:200px; overflow:auto;"><table border="0" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+            dayunHtml += '<tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr>';
             if(daYunList && daYunList.length){
                 for(var i=0; i<daYunList.length; i++) {
                     dayunHtml += '<tr><td>' + (i+1) + '</td><td>' + daYunList[i].getStartYear() + '</td><td>' + daYunList[i].getGanZhi() + '</td><td>参考日主' + eightChar.getDayGan() + '，结合流年干支综合判断。</td></tr>';
@@ -299,7 +304,8 @@
             var genderInt = parseInt(document.getElementById('gender').value);
             var astrolabe = Lunar.Astrolabe.fromBirth(birthDate.getFullYear(), birthDate.getMonth()+1, birthDate.getDate(), birthDate.getHours(), birthDate.getMinutes(), genderInt);
             var palaces = astrolabe.getPalaces();
-            var ziweiHtml = '<table><tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr>';
+            var ziweiHtml = '<table border="0" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+            ziweiHtml += '<tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr>';
             for(var i=0; i<palaces.length; i++) {
                 var p = palaces[i];
                 ziweiHtml += '<tr><td>' + p.getName() + '</td><td>无</td><td></td><td>' + (p.getLueDu() || '—') + '</td></tr>';
@@ -324,8 +330,10 @@
     function renderBaguaGrid() {
         var dir = document.getElementById('houseDirection').value;
         var stars = baguaMap[dir];
-        var html = '<h4>🏡 ' + dir + '宅 八宅吉凶星方位 (苏民峰传承)</h4><table><tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>';
-        html += '<tr><td><strong>方位</strong></td><td>' + stars.生气 + '</td><td>' + stars.延年 + '</td><td>' + stars.天医 + '</td><td>' + stars.伏位 + '</td><td>' + stars.五鬼 + '</td><td>' + stars.六煞 + '</td><td>' + stars.绝命 + '</td><td>' + stars.祸害 + '</td></tr></table>';
+        var html = '<h4>🏡 ' + dir + '宅 八宅吉凶星方位 (苏民峰传承)</h4><table border="0" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse;">';
+        html += '<tr><th>吉凶星</th><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>';
+        html += '<tr><td><strong>方位</strong></td><td>' + stars.生气 + '</td><td>' + stars.延年 + '</td><td>' + stars.天医 + '</td><td>' + stars.伏位 + '</td><td>' + stars.五鬼 + '</td><td>' + stars.六煞 + '</td><td>' + stars.绝命 + '</td><td>' + stars.祸害 + '</td></tr>';
+        html += '</table>';
         document.getElementById('baguaGridDisplay').innerHTML = html;
         if(unlockedFengshui) showFengshuiUnlockedDetail(dir);
         else document.getElementById('fengshuiUnlockedContent').style.display = 'none';
@@ -350,9 +358,4 @@
     function showMarriageDetailUnlocked() {
         if(!unlockedMarriage) return;
         if(!currentEightChar) { document.getElementById('marriageDetail').innerHTML = '请先生成八字再解锁合婚。'; return; }
-        var pDate = new Date(document.getElementById('partnerSolarDate').value);
-        pDate.setHours(parseInt(document.getElementById('partnerTime').value)*2+1);
-        var lunarPartner = Lunar.Lunar.fromDate(pDate);
-        var ec2 = lunarPartner.getEightChar();
-        var analysis = '【合婚详批】日柱：' + currentEightChar.getDayGanZhi() + ' 与 ' + ec2.getDayGanZhi() + '，' + (currentEightChar.getDayGan()===ec2.getDayGan()?'日元比和':'需互补') + '。子平合婚法：年柱相生，月柱协调，婚缘指数良好。三合六冲: 生肖' + currentLunarDate.getYearShengXiao() + '配' + lunarPartner.getYearShengXiao() + '，中吉。';
-        document.getElementById('marriageDetail').innerHTML = '<div class="badge-un
+        var pDate = new Date
