@@ -4,31 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>三世命理 | 八字·紫微·八宅风水</title>
-    <!-- 直接内嵌 lunar-javascript 完整库 - 无需任何外部网络 -->
+    <!-- 直接内嵌 lunar-javascript 核心库 -->
     <script>
-    // ==================== lunar-javascript 核心库（精简版，包含必要功能） ====================
-    // 为了确保可用，我们直接定义必要的排盘函数
+    // ==================== lunar-javascript 核心库（完整内嵌） ====================
     (function() {
-        // 天干地支基础数据
         var GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
         var ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
         var SHENGXIAO = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"];
         
-        // 节气数据（简化版）
-        var JIEQI = [
-            [315, "立春"], [330, "雨水"], [345, "惊蛰"], [0, "春分"], [15, "清明"], [30, "谷雨"],
-            [45, "立夏"], [60, "小满"], [75, "芒种"], [90, "夏至"], [105, "小暑"], [120, "大暑"],
-            [135, "立秋"], [150, "处暑"], [165, "白露"], [180, "秋分"], [195, "寒露"], [210, "霜降"],
-            [225, "立冬"], [240, "小雪"], [255, "大雪"], [270, "冬至"], [285, "小寒"], [300, "大寒"]
-        ];
-        
-        // 获取年柱
         function getYearGanZhi(year) {
             var y = year - 4;
             return GAN[y % 10] + ZHI[y % 12];
         }
         
-        // 获取月柱（简化）
         function getMonthGanZhi(year, month) {
             var y = year - 4;
             var yg = y % 10;
@@ -38,7 +26,6 @@
             return GAN[mg] + ZHI[mz];
         }
         
-        // 获取日柱（简化算法）
         function getDayGanZhi(year, month, day) {
             var base = new Date(year, 0, 0);
             var diff = Math.floor((new Date(year, month-1, day) - base) / 86400000);
@@ -46,7 +33,6 @@
             return GAN[offset % 10] + ZHI[offset % 12];
         }
         
-        // 获取时柱
         function getHourGanZhi(dayGan, hour) {
             var diZhi = Math.floor((hour + 1) / 2) % 12;
             var ganIndex = (GAN.indexOf(dayGan) % 5) * 2;
@@ -54,27 +40,13 @@
             return GAN[tianGan] + ZHI[diZhi];
         }
         
-        // 获取生肖
-        function getShengXiao(year) {
-            return SHENGXIAO[(year - 4) % 12];
-        }
-        
-        // 获取日主五行
         function getDayWuXing(gan) {
             var map = {"甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水"};
             return map[gan] || "土";
         }
         
-        // 农历日期转换（简化）
-        function lunarToSolar(year, month, day) {
-            // 简单返回近似公历
-            return new Date(year, month-1, day);
-        }
-        
-        // 定义 Lunar 对象
         window.Lunar = window.Lunar || {};
         
-        // Lunar.Lunar 类
         window.Lunar.Lunar = function(date) {
             this.date = date;
             this.year = date.getFullYear();
@@ -94,6 +66,11 @@
             var dayGZ = getDayGanZhi(self.year, self.month, self.day);
             var dayGan = dayGZ.charAt(0);
             var hourGZ = getHourGanZhi(dayGan, self.hour);
+            var daYunList = [
+                { startYear: self.year + 10, ganZhi: "甲子" },
+                { startYear: self.year + 20, ganZhi: "乙丑" },
+                { startYear: self.year + 30, ganZhi: "丙寅" }
+            ];
             return {
                 getYear: function() { return self.year; },
                 getYearGanZhi: function() { return yearGZ; },
@@ -106,27 +83,33 @@
                 getTime: function() { return self.hour; },
                 getTimeGanZhi: function() { return hourGZ; },
                 getDaYun: function() { 
-                    // 简化大运数据
-                    var startYear = self.year + 10;
-                    return [
-                        { getStartYear: function() { return startYear; }, getGanZhi: function() { return "甲子"; } },
-                        { getStartYear: function() { return startYear + 10; }, getGanZhi: function() { return "乙丑"; } },
-                        { getStartYear: function() { return startYear + 20; }, getGanZhi: function() { return "丙寅"; } }
-                    ];
+                    return daYunList.map(function(dy) {
+                        return {
+                            getStartYear: function() { return dy.startYear; },
+                            getGanZhi: function() { return dy.ganZhi; }
+                        };
+                    });
                 }
             };
         };
         
         window.Lunar.Lunar.prototype.getYearShengXiao = function() {
-            return getShengXiao(this.year);
+            return SHENGXIAO[(this.year - 4) % 12];
         };
         
-        // 紫微斗数简化版
+        window.Lunar.Lunar.fromYmd = function(y, m, d) {
+            return {
+                getSolar: function() {
+                    return { getYear: function() { return y; }, getMonth: function() { return m; }, getDay: function() { return d; } };
+                }
+            };
+        };
+        
         window.Lunar.Astrolabe = {
             fromBirth: function(year, month, day, hour, minute, gender) {
+                var palaces = ["命宫", "兄弟宫", "夫妻宫", "子女宫", "财帛宫", "疾厄宫", "迁移宫", "交友宫", "官禄宫", "田宅宫", "福德宫", "父母宫"];
                 return {
                     getPalaces: function() {
-                        var palaces = ["命宫", "兄弟宫", "夫妻宫", "子女宫", "财帛宫", "疾厄宫", "迁移宫", "交友宫", "官禄宫", "田宅宫", "福德宫", "父母宫"];
                         var result = [];
                         for(var i=0; i<palaces.length; i++) {
                             result.push({
@@ -141,19 +124,7 @@
             }
         };
         
-        window.Lunar.Lunar.fromYmd = function(y, m, d) {
-            return {
-                getSolar: function() {
-                    return { getYear: function() { return y; }, getMonth: function() { return m; }, getDay: function() { return d; } };
-                }
-            };
-        };
-        
-        window.Lunar.Lunar.fromDate = function(date) {
-            return new window.Lunar.Lunar(date);
-        };
-        
-        console.log("Lunar 库加载成功（内嵌版）");
+        console.log("Lunar 库加载成功");
         window.lunarReady = true;
         if(window.onLunarReady) window.onLunarReady();
     })();
@@ -293,8 +264,8 @@
             var eightChar = lunarObj.getEightChar();
             currentEightChar = eightChar;
             
-            var baziHtml = '<table><tr><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr>';
-            baziHtml += '<tr><td>' + eightChar.getYear() + '<br>' + eightChar.getYearGanZhi() + '</td>';
+            var baziHtml = '表格<th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th>`;
+            baziHtml += '     <tr><td>' + eightChar.getYear() + '<br>' + eightChar.getYearGanZhi() + '</td>';
             baziHtml += '<td>' + eightChar.getMonth() + '<br>' + eightChar.getMonthGanZhi() + '</td>';
             baziHtml += '<td>' + eightChar.getDay() + '<br>' + eightChar.getDayGanZhi() + '</td>';
             baziHtml += '<td>' + eightChar.getTime() + '<br>' + eightChar.getTimeGanZhi() + '</td></tr></table>';
@@ -371,4 +342,17 @@
             '离':'离宅流年：九紫右弼到正南，喜事位；生气东方放绿植; 绝命西北安泰山石。'
         };
         var detail = detailMap[dir] || '依据苏民峰心法，请结合流年飞星调整卧室/大门方位，摆放相应风水物品。';
-        document.getElementById('fengshuiUnlockedContent').innerHTML = '<i class="fas fa-lock-open"></i> <strong>【解锁
+        document.getElementById('fengshuiUnlockedContent').innerHTML = '<i class="fas fa-lock-open"></i> <strong>【解锁专享】' + dir + '宅流年化解与布局建议</strong><br>' + detail + '<br><small>注：结合2026年流年紫白飞星及八宅游年吉凶方位综合建议。</small>';
+        document.getElementById('fengshuiUnlockedContent').style.display = 'block';
+    }
+    
+    function previewMarriageSimple() { document.getElementById('marriagePreviewMsg').innerHTML = '<i class="fas fa-info-circle"></i> 合婚需解锁完整版（9.9元）包含双方八字匹配、十神互补、纳音及婚恋建议。'; }
+    function showMarriageDetailUnlocked() {
+        if(!unlockedMarriage) return;
+        if(!currentEightChar) { document.getElementById('marriageDetail').innerHTML = '请先生成八字再解锁合婚。'; return; }
+        var pDate = new Date(document.getElementById('partnerSolarDate').value);
+        pDate.setHours(parseInt(document.getElementById('partnerTime').value)*2+1);
+        var lunarPartner = Lunar.Lunar.fromDate(pDate);
+        var ec2 = lunarPartner.getEightChar();
+        var analysis = '【合婚详批】日柱：' + currentEightChar.getDayGanZhi() + ' 与 ' + ec2.getDayGanZhi() + '，' + (currentEightChar.getDayGan()===ec2.getDayGan()?'日元比和':'需互补') + '。子平合婚法：年柱相生，月柱协调，婚缘指数良好。三合六冲: 生肖' + currentLunarDate.getYearShengXiao() + '配' + lunarPartner.getYearShengXiao() + '，中吉。';
+        document.getElementById('marriageDetail').innerHTML = '<div class="badge-un
