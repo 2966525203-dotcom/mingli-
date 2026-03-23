@@ -118,7 +118,6 @@
 // 天干地支数据
 var GAN = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 var ZHI = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
-var SHENGXIAO = ["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"];
 var WU_XING = {"甲":"木","乙":"木","丙":"火","丁":"火","戊":"土","己":"土","庚":"金","辛":"金","壬":"水","癸":"水"};
 var CANG_GAN = { "子":"癸", "丑":"己癸辛", "寅":"甲丙戊", "卯":"乙", "辰":"戊乙癸", "巳":"丙戊庚", "午":"丁己", "未":"己丁乙", "申":"庚壬戊", "酉":"辛", "戌":"戊辛丁", "亥":"壬甲" };
 
@@ -127,9 +126,7 @@ function getMonthGanZhi(y,m) { var n=y-4, yg=n%10, start=(yg*2)%10, mg=(start+m-
 function getDayGanZhi(y,m,d) { var base=new Date(y,0,0), diff=Math.floor((new Date(y,m-1,d)-base)/86400000), off=(diff+9)%60; return GAN[off%10]+ZHI[off%12]; }
 function getHourGanZhi(dg,h) { var dz=Math.floor((h+1)/2)%12, gi=GAN.indexOf(dg)%5*2, tg=(gi+dz)%10; return GAN[tg]+ZHI[dz]; }
 function getShiShen(dayGan, otherGan) { var map={"甲":"比肩","乙":"劫财","丙":"食神","丁":"伤官","戊":"偏财","己":"正财","庚":"七杀","辛":"正官","壬":"偏印","癸":"正印"}; return map[otherGan]||"—"; }
-function getShenSha(dayGan) { var ss=[]; if(dayGan==="甲"||dayGan==="戊"||dayGan==="庚") ss.push("文昌贵人"); if(dayGan==="丙"||dayGan==="丁") ss.push("文曲星"); if(dayGan==="甲") ss.push("天德贵人","月德贵人"); if(dayGan==="庚"||dayGan==="辛") ss.push("天乙贵人"); return ss; }
-
-var currentBazi = null;
+function getShenSha(dayGan) { var ss=[]; if(dayGan==="甲"||dayGan==="戊"||dayGan==="庚") ss.push("文昌贵人"); if(dayGan==="丙"||dayGan==="丁") ss.push("文曲星"); if(dayGan==="甲") ss.push("天德贵人","月德贵人"); if(dayGan==="庚"||dayGan==="辛") ss.push("天乙贵人"); if(dayGan==="壬") ss.push("福星贵人"); return ss; }
 
 function getBirthDateTime(calType, solarDate, lunarYear, lunarMonth, lunarDay, hourIdx) {
     var hour = hourIdx * 2 + (hourIdx>=6?1:0);
@@ -169,25 +166,30 @@ function refreshBazi() {
         var dayGan = dayGZ.charAt(0);
         var hourGZ = getHourGanZhi(dayGan, hour);
         
-        currentBazi = { yearGZ:yearGZ, monthGZ:monthGZ, dayGZ:dayGZ, hourGZ:hourGZ, dayGan:dayGan, year:year, month:month, day:day, hour:hour };
-        
-        var html = '<h3 style="margin-bottom:12px;">📜 八字四柱</h3><table><thead><tr><th>四柱</th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr></thead><tbody>';
+        // 八字表格
+        var html = '<h3 style="margin-bottom:12px;">📜 八字四柱</h3>';
+        html += '<table><thead><tr><th>四柱</th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr></thead><tbody>';
         html += '<tr><td><strong>天干</strong></td><td>'+yearGZ[0]+'</td><td>'+monthGZ[0]+'</td><td>'+dayGZ[0]+'</td><td>'+hourGZ[0]+'</td></tr>';
         html += '<tr><td><strong>地支</strong></td><td>'+yearGZ[1]+'</td><td>'+monthGZ[1]+'</td><td>'+dayGZ[1]+'</td><td>'+hourGZ[1]+'</td></tr>';
         html += '<tr><td><strong>藏干</strong></td><td>'+(CANG_GAN[yearGZ[1]]||"—")+'</td><td>'+(CANG_GAN[monthGZ[1]]||"—")+'</td><td>'+(CANG_GAN[dayGZ[1]]||"—")+'</td><td>'+(CANG_GAN[hourGZ[1]]||"—")+'</td></tr>';
         html += '<tr><td><strong>十神</strong></td><td>'+getShiShen(dayGan, yearGZ[0])+'</td><td>'+getShiShen(dayGan, monthGZ[0])+'</td><td>比肩/劫财</td><td>'+getShiShen(dayGan, hourGZ[0])+'</td></tr>';
-        html += '</tbody></table><div style="margin-top:12px;"><strong>日主</strong> '+dayGan+' · 五行'+WU_XING[dayGan]+'</div>';
+        html += '</tbody></table>';
+        html += '<div style="margin-top:12px;"><strong>日主</strong> '+dayGan+' · 五行'+WU_XING[dayGan]+'</div>';
         document.getElementById('baziContent').innerHTML = html;
         
+        // 神煞
         var shensha = getShenSha(dayGan);
         var ssHtml = '<h3>✨ 神煞</h3><div>';
-        shensha.forEach(function(s){ ssHtml += '<span class="tab-btn">'+s+'</span> '; });
+        for(var i=0;i<shensha.length;i++) ssHtml += '<span class="tab-btn">'+shensha[i]+'</span> ';
         ssHtml += '</div>';
         document.getElementById('shenshaContent').innerHTML = ssHtml;
         
+        // 大运
         var dyHtml = '<table><thead><tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr></thead><tbody>';
         for(var i=1;i<=6;i++){
-            dyHtml += '<tr><td>'+i+'</td><td>'+(year+5+5*i)+'</td><td>'+GAN[(year+4+i)%10]+ZHI[(year+4+i)%12]+'</td><td>参考日主'+dayGan+'，结合流年干支判断</td></tr>';
+            var startAge = i*10;
+            var dyGZ = GAN[(year+4+i)%10]+ZHI[(year+4+i)%12];
+            dyHtml += '<tr><td>'+i+'</td><td>'+startAge+'岁</td><td>'+dyGZ+'</td><td>参考日主'+dayGan+'，结合流年干支判断</td></tr>';
         }
         dyHtml += '</tbody></table>';
         document.getElementById('dayunLiunianInfo').innerHTML = dyHtml;
@@ -203,12 +205,14 @@ function refreshZiwei() {
     var palaces = ["命宫","兄弟宫","夫妻宫","子女宫","财帛宫","疾厄宫","迁移宫","交友宫","官禄宫","田宅宫","福德宫","父母宫"];
     var html = '<table><thead><tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr></thead><tbody>';
     for(var i=0;i<palaces.length;i++){
-        var mainStar = "—", minorStar = "—";
+        var mainStar = "—";
         if(palaces[i]==="命宫") mainStar = "紫微";
         if(palaces[i]==="夫妻宫") mainStar = "天机";
         if(palaces[i]==="财帛宫") mainStar = "武曲";
         if(palaces[i]==="官禄宫") mainStar = "太阳";
-        html += '<tr><td>'+palaces[i]+'</td><td>'+mainStar+'</td><td>'+minorStar+'</td><td>—</td></tr>';
+        if(palaces[i]==="迁移宫") mainStar = "天同";
+        if(palaces[i]==="福德宫") mainStar = "天梁";
+        html += '<tr><td>'+palaces[i]+'</td><td>'+mainStar+'</td><td>—</td><td>—</td></tr>';
     }
     html += '</tbody></table><div style="margin-top:8px;">※ 紫微斗数排盘专业精准</div>';
     document.getElementById('ziweiPanel').innerHTML = html;
@@ -227,7 +231,8 @@ var baguaMap = {
 function renderBaguaGrid() {
     var dir = document.getElementById('houseDirection').value;
     var s = baguaMap[dir];
-    var html = '<h4>🏡 '+dir+'宅 八宅吉凶星方位 (苏民峰传承)</h4><table><thead><tr><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr></thead><tbody><tr>';
+    var html = '<h4>🏡 '+dir+'宅 八宅吉凶星方位 (苏民峰传承)</h4>';
+    html += '<table><thead><tr><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr></thead><tbody><tr>';
     html += '<td>'+s.生气+'</td><td>'+s.延年+'</td><td>'+s.天医+'</td><td>'+s.伏位+'</td><td>'+s.五鬼+'</td><td>'+s.六煞+'</td><td>'+s.绝命+'</td><td>'+s.祸害+'</td>';
     html += '</tr></tbody></table>';
     document.getElementById('baguaGridDisplay').innerHTML = html;
@@ -288,4 +293,4 @@ function showMarriageDetail() {
 function previewMarriageYear() {
     var date = document.getElementById('yearUserDate').value;
     var hour = parseInt(document.getElementById('yearUserTime').value);
-    var d = new Date(date); d
+    var d
