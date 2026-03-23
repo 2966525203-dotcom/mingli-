@@ -21,7 +21,7 @@
         input, select, button { padding:10px 12px; border-radius:40px; border:1px solid #ddd0bc; background:#fffaf2; font-size:0.9rem; width:100%; outline:none; }
         button { background:#e7cfb5; cursor:pointer; font-weight:bold; color:#3a2a1d; border:none; }
         button.primary { background:#c7793c; color:white; }
-        .pay-btn-small { background:#f0dbb4; font-size:0.8rem; padding:6px 12px; display:inline-block; width:auto; cursor:pointer; }
+        .pay-btn-small { background:#f0dbb4; font-size:0.8rem; padding:6px 12px; display:inline-block; width:auto; cursor:pointer; border-radius:30px; }
         .grid-2col { display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:24px; }
         .bazi-grid, .ziwei-table { overflow-x:auto; background:#fefaf3; border-radius:24px; padding:12px; margin-top:12px; }
         table { width:100%; border-collapse:collapse; font-size:0.85rem; }
@@ -43,6 +43,7 @@
         footer { text-align:center; margin:40px 0 20px; font-size:0.7rem; color:#aa8c70; }
         .error-msg { background:#ffe6e6; border-left:4px solid #c0392b; padding:10px; margin:10px 0; border-radius:8px; color:#a04030; font-size:0.8rem; }
         .tab-btn { background:#e7cfb5; border-radius:30px; padding:6px 16px; margin-right:8px; margin-bottom:8px; display:inline-block; font-size:0.8rem; }
+        .success-msg { background:#e6ffe6; border-left:4px solid #2e7d32; padding:10px; border-radius:8px; color:#2e7d32; }
         @media (max-width:680px) { .card { padding:15px; } .hero h1 { font-size:1.8rem; } }
     </style>
 </head>
@@ -168,12 +169,12 @@ function refreshBazi() {
         
         // 八字表格
         var html = '<h3 style="margin-bottom:12px;">📜 八字四柱</h3>';
-        html += '<table><thead><tr><th>四柱</th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr></thead><tbody>';
-        html += '<tr><td><strong>天干</strong></td><td>'+yearGZ[0]+'</td><td>'+monthGZ[0]+'</td><td>'+dayGZ[0]+'</td><td>'+hourGZ[0]+'</td></tr>';
-        html += '<tr><td><strong>地支</strong></td><td>'+yearGZ[1]+'</td><td>'+monthGZ[1]+'</td><td>'+dayGZ[1]+'</td><td>'+hourGZ[1]+'</td></tr>';
-        html += '<tr><td><strong>藏干</strong></td><td>'+(CANG_GAN[yearGZ[1]]||"—")+'</td><td>'+(CANG_GAN[monthGZ[1]]||"—")+'</td><td>'+(CANG_GAN[dayGZ[1]]||"—")+'</td><td>'+(CANG_GAN[hourGZ[1]]||"—")+'</td></tr>';
-        html += '<tr><td><strong>十神</strong></td><td>'+getShiShen(dayGan, yearGZ[0])+'</td><td>'+getShiShen(dayGan, monthGZ[0])+'</td><td>比肩/劫财</td><td>'+getShiShen(dayGan, hourGZ[0])+'</td></tr>';
-        html += '</tbody></table>';
+        html += '\\n<table>\\n<thead>\\n<tr><th>四柱</th><th>年柱</th><th>月柱</th><th>日柱</th><th>时柱</th></tr>\\n</thead>\\n<tbody>';
+        html += '\\n<tr><td><strong>天干</strong></td><td>'+yearGZ[0]+'</td><td>'+monthGZ[0]+'</td><td>'+dayGZ[0]+'</td><td>'+hourGZ[0]+'</td></tr>';
+        html += '\\n<tr><td><strong>地支</strong></td><td>'+yearGZ[1]+'</td><td>'+monthGZ[1]+'</td><td>'+dayGZ[1]+'</td><td>'+hourGZ[1]+'</td></tr>';
+        html += '\\n<tr><td><strong>藏干</strong></td><td>'+(CANG_GAN[yearGZ[1]]||"—")+'</td><td>'+(CANG_GAN[monthGZ[1]]||"—")+'</td><td>'+(CANG_GAN[dayGZ[1]]||"—")+'</td><td>'+(CANG_GAN[hourGZ[1]]||"—")+'</td></tr>';
+        html += '\\n<tr><td><strong>十神</strong></td><td>'+getShiShen(dayGan, yearGZ[0])+'</td><td>'+getShiShen(dayGan, monthGZ[0])+'</td><td>比肩/劫财</td><td>'+getShiShen(dayGan, hourGZ[0])+'</td></tr>';
+        html += '\\n</tbody>\\n</table>';
         html += '<div style="margin-top:12px;"><strong>日主</strong> '+dayGan+' · 五行'+WU_XING[dayGan]+'</div>';
         document.getElementById('baziContent').innerHTML = html;
         
@@ -185,13 +186,13 @@ function refreshBazi() {
         document.getElementById('shenshaContent').innerHTML = ssHtml;
         
         // 大运
-        var dyHtml = '<table><thead><tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr></thead><tbody>';
+        var dyHtml = '\\n<table>\\n<thead>\\n<tr><th>大运序号</th><th>起运年龄</th><th>干支</th><th>流年喜忌提示</th></tr>\\n</thead>\\n<tbody>';
         for(var i=1;i<=6;i++){
             var startAge = i*10;
             var dyGZ = GAN[(year+4+i)%10]+ZHI[(year+4+i)%12];
-            dyHtml += '<tr><td>'+i+'</td><td>'+startAge+'岁</td><td>'+dyGZ+'</td><td>参考日主'+dayGan+'，结合流年干支判断</td></tr>';
+            dyHtml += '\\n<tr><td>'+i+'</td><td>'+startAge+'岁</td><td>'+dyGZ+'</td><td>参考日主'+dayGan+'，结合流年干支判断</td></tr>';
         }
-        dyHtml += '</tbody></table>';
+        dyHtml += '\\n</tbody>\\n</table>';
         document.getElementById('dayunLiunianInfo').innerHTML = dyHtml;
         
         return true;
@@ -203,7 +204,7 @@ function refreshBazi() {
 
 function refreshZiwei() {
     var palaces = ["命宫","兄弟宫","夫妻宫","子女宫","财帛宫","疾厄宫","迁移宫","交友宫","官禄宫","田宅宫","福德宫","父母宫"];
-    var html = '<table><thead><tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr></thead><tbody>';
+    var html = '\\n<table>\\n<thead>\\n<tr><th>宫名</th><th>主星</th><th>辅星</th><th>天干四化</th></tr>\\n</thead>\\n<tbody>';
     for(var i=0;i<palaces.length;i++){
         var mainStar = "—";
         if(palaces[i]==="命宫") mainStar = "紫微";
@@ -212,9 +213,9 @@ function refreshZiwei() {
         if(palaces[i]==="官禄宫") mainStar = "太阳";
         if(palaces[i]==="迁移宫") mainStar = "天同";
         if(palaces[i]==="福德宫") mainStar = "天梁";
-        html += '<tr><td>'+palaces[i]+'</td><td>'+mainStar+'</td><td>—</td><td>—</td></tr>';
+        html += '\\n<tr><td>'+palaces[i]+'</td><td>'+mainStar+'</td><td>—</td><td>—</td></tr>';
     }
-    html += '</tbody></table><div style="margin-top:8px;">※ 紫微斗数排盘专业精准</div>';
+    html += '\\n</tbody>\\n</table><div style="margin-top:8px;">※ 紫微斗数排盘专业精准</div>';
     document.getElementById('ziweiPanel').innerHTML = html;
 }
 
@@ -232,9 +233,9 @@ function renderBaguaGrid() {
     var dir = document.getElementById('houseDirection').value;
     var s = baguaMap[dir];
     var html = '<h4>🏡 '+dir+'宅 八宅吉凶星方位 (苏民峰传承)</h4>';
-    html += '<table><thead><tr><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr></thead><tbody><tr>';
+    html += '\\n<table>\\n<thead>\\n<tr><th>生气</th><th>延年</th><th>天医</th><th>伏位</th><th>五鬼</th><th>六煞</th><th>绝命</th><th>祸害</th></tr>\\n</thead>\\n<tbody>\\n<tr>';
     html += '<td>'+s.生气+'</td><td>'+s.延年+'</td><td>'+s.天医+'</td><td>'+s.伏位+'</td><td>'+s.五鬼+'</td><td>'+s.六煞+'</td><td>'+s.绝命+'</td><td>'+s.祸害+'</td>';
-    html += '</tr></tbody></table>';
+    html += '</tr>\\n</tbody>\\n</table>';
     document.getElementById('baguaGridDisplay').innerHTML = html;
     if(unlockedFengshui) showFengshuiDetail(dir);
 }
@@ -283,14 +284,4 @@ function showMarriageDetail() {
     var wHourGZ = getHourGanZhi(wDayGZ.charAt(0), wh);
     var analysis = '【合婚详批】<br>男方：'+mYearGZ+'年 '+mMonthGZ+'月 '+mDayGZ+'日 '+mHourGZ+'时<br>';
     analysis += '女方：'+wYearGZ+'年 '+wMonthGZ+'月 '+wDayGZ+'日 '+wHourGZ+'时<br>';
-    analysis += '日柱：'+mDayGZ+' 与 '+wDayGZ+'，';
-    if(mDayGZ.charAt(0)===wDayGZ.charAt(0)) analysis += '日元比和，婚缘指数良好。';
-    else analysis += '五行互补，相得益彰。';
-    analysis += '<br>建议择吉日婚配。';
-    document.getElementById('marriageDetail').innerHTML = '<div class="badge-unlocked">已解锁</div><div>'+analysis+'</div>';
-}
-
-function previewMarriageYear() {
-    var date = document.getElementById('yearUserDate').value;
-    var hour = parseInt(document.getElementById('yearUserTime').value);
-    var d
+    analysis += '日柱：'+mDay
